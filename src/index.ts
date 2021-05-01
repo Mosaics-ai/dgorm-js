@@ -302,8 +302,6 @@ class DgraphORM {
   }
 }
 
-const DGraphSingleton = new DgraphORM();
-
 // Include types
 export * from './types';
-export default DGraphSingleton;
+export default DgraphORM;
