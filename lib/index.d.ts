@@ -181,6 +181,5 @@ declare class DgraphORM {
      */
     mutate(mutation: string): Promise<any>;
 }
-declare const DGraphSingleton: DgraphORM;
 export * from './types';
-export default DGraphSingleton;
+export default DgraphORM;
