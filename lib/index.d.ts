@@ -182,4 +182,5 @@ declare class DgraphORM {
     mutate(mutation: string): Promise<any>;
 }
 export * from './types';
-export default DgraphORM;
+declare const _default: DgraphORM;
+export default _default;

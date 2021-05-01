@@ -303,4 +303,4 @@ class DgraphORM {
 
 // Include types
 export * from './types';
-export default DgraphORM;
+export default new DgraphORM();
