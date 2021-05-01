@@ -13,10 +13,9 @@
     "url": "git+https://github.com/Mosaics-ai/dgorm-js.git"
   },
   "keywords": [
-    "dgraph-orm",
-    "dgraph-schema"
+    "dgorm-js"
   ],
-  "author": "Ashok Vishwakarma <akvlko@gmail.com>",
+  "author": "George Patterson <george@mosaics.ai>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Mosaics-ai/dgorm-js/issues"
