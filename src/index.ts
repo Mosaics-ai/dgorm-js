@@ -55,7 +55,6 @@ import Connection from './connection';
 import Model from './model';
 
 import { TypesType, SchemaFields, ConnectionConfig, QueryParams } from './types';
-import { resolve } from 'node:path';
 import GraphQL from './graphql';
 
 /**
