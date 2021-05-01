@@ -19,7 +19,6 @@ import gqlfetch from './helpers/gqlfetch';
  * 
  * https://www.npmjs.com/package/grpc
  */
-import grpc from '@grpc/grpc-js';
 import { ConnectionConfig } from './types';
 
 /**
@@ -31,7 +30,7 @@ const _config: ConnectionConfig = {
   host: '127.0.0.1',
   port: 9080,
   debug: true,
-  credentails: grpc.credentials.createInsecure(),
+  credentails: dgraph.grpc.credentials.createInsecure(),
   graphql: '', // 'http://localhost:4000'
 }
 

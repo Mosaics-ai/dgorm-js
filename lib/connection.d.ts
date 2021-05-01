@@ -11,6 +11,11 @@
  * https://www.npmjs.com/package/dgraph-js
  */
 import dgraph from 'dgraph-js';
+/**
+ * grpc
+ *
+ * https://www.npmjs.com/package/grpc
+ */
 import { ConnectionConfig } from './types';
 /**
  * Connection

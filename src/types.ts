@@ -1,4 +1,4 @@
-import grpc from '@grpc/grpc-js';
+import dgraph from 'dgraph-js';
 
 interface Base {
   include?: Include
@@ -14,7 +14,7 @@ export interface ConnectionConfig {
   host?: string
   port?: number
   debug?: boolean
-  credentails?: grpc.ChannelCredentials
+  credentails?: dgraph.grpc.ChannelCredentials
   graphql?: string
 }
 
