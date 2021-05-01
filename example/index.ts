@@ -1,6 +1,6 @@
 // import grpc from 'grpc';
 import dgjs from 'dgraph-js'
-import dgraph from '../src';
+import DgORM from '../src';
 
 /**
  * dgraph.connect
@@ -13,6 +13,8 @@ import dgraph from '../src';
  *  credentails: // gprc credential default grpc.credentials.createInsecure()
  * }
  */
+const dgraph = new DgORM();
+
 dgraph.connect({
   /**
    * host
