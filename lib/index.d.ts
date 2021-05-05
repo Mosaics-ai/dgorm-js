@@ -109,14 +109,6 @@ declare class DgraphORM {
      */
     private _log;
     /**
-     * _create_connection
-     *
-     * @param config {ConnectionConfig}
-     *
-     * @returns Connection
-     */
-    private _create_connection;
-    /**
      * _set_model
      *
      * @param schema {Schema}
@@ -164,6 +156,14 @@ declare class DgraphORM {
      * @returns void
      */
     connect(config: ConnectionConfig): Connection;
+    /**
+     * _create_connection
+     *
+     * @param config {ConnectionConfig}
+     *
+     * @returns Connection
+     */
+    private _create_connection;
     /**
      * query
      *

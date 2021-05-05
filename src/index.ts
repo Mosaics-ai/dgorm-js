@@ -156,17 +156,6 @@ class DgraphORM {
   }
 
   /**
-   * _create_connection
-   * 
-   * @param config {ConnectionConfig}
-   * 
-   * @returns Connection
-   */
-  private _create_connection(config: ConnectionConfig = null): Connection {
-    return new Connection(config, this._log.bind(this));
-  }
-
-  /**
    * _set_model
    * 
    * @param schema {Schema}
@@ -271,6 +260,17 @@ class DgraphORM {
     return this.connection;
   }
 
+  /**
+   * _create_connection
+   * 
+   * @param config {ConnectionConfig}
+   * 
+   * @returns Connection
+   */
+   private _create_connection(config: ConnectionConfig = null): Connection {
+    return new Connection(config, this._log.bind(this));
+  }
+  
   /**
    * query
    * 

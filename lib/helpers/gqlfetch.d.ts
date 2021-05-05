@@ -5,16 +5,17 @@
  *
  * @author George Patterson <george@mosaics.ai>
  */
+import { HeadersInit } from 'node-fetch';
 export interface IGraphQLBody {
     query?: string;
     mutation?: string;
     variables?: string;
 }
 declare const _default: {
-    sendGraphQL: (endpoint: string, body: string | IGraphQLBody) => void;
-    sendAdmin: (endpoint: string, body: string | IGraphQLBody) => void;
-    updateSchema: (endpoint: string, schema: string) => void;
-    validateSchema: (endpoint: string, schema: string) => void;
-    getHealth: (endpoint: string) => void;
+    sendGraphQL: (endpoint: string, body: string | IGraphQLBody, headers?: HeadersInit) => Promise<void>;
+    sendAdmin: (endpoint: string, body: string | IGraphQLBody, headers?: HeadersInit) => Promise<void>;
+    updateSchema: (endpoint: string, schema: string, headers?: HeadersInit) => Promise<void>;
+    validateSchema: (endpoint: string, schema: string, headers?: HeadersInit) => Promise<void>;
+    getHealth: (endpoint: string, headers?: HeadersInit) => Promise<void>;
 };
 export default _default;

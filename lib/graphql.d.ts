@@ -53,9 +53,10 @@ declare class GraphQL {
      * @param logger {Function}
      */
     constructor(schema: string, models: any, connection: Connection, logger: Function);
-    validateSchema(): void;
-    updateSchema(): void;
+    validateSchema(): Promise<any>;
+    updateSchema(): Promise<any>;
     getHealth(): void;
+    getSchema(): Promise<any>;
     /**
      * graphql getter
      *

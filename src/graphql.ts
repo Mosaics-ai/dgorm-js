@@ -27,6 +27,7 @@
   */
  import Connection from './connection';
 import gqlfetch from './helpers/gqlfetch';
+import { resolve } from 'node:path';
 
  /**
   * GraphQL
@@ -81,9 +82,11 @@ import gqlfetch from './helpers/gqlfetch';
         this._logger = logger;
     }
 
-    validateSchema(): void {
+    validateSchema(): Promise<any> {
         if(this.graphql && this.schema) {
-            gqlfetch.validateSchema(this.graphql, this.schema);
+            return gqlfetch.validateSchema(this.graphql, this.schema)
+                .then(r => Promise.resolve(r))
+                .catch(e => Promise.reject(e));
         } else {
             const error:string = "No schema or endpoint defined";
             console.error(error, this.graphql, this.schema);
@@ -91,9 +94,11 @@ import gqlfetch from './helpers/gqlfetch';
         }
     }
 
-    updateSchema(): void {
+    updateSchema(): Promise<any> {
         if(this.graphql && this.schema) {
-            gqlfetch.updateSchema(this.graphql, this.schema);
+            return gqlfetch.updateSchema(this.graphql, this.schema)
+                .then(r => Promise.resolve(r))
+                .catch(e => Promise.reject(e));
         } else {
             const error:string = "No schema or endpoint defined";
             console.error(error, this.graphql, this.schema);
@@ -109,6 +114,19 @@ import gqlfetch from './helpers/gqlfetch';
             console.error(error);
             throw(error);
         }
+    }
+
+    getSchema():Promise<any> {
+        return gqlfetch.sendAdmin(this.graphql, `
+            query IntrospectionQuery {
+                getGQLSchema {
+                    schema
+                    generatedSchema
+                }
+            }
+        `)
+        .then(r => Promise.resolve(r))
+        .catch(e => Promise.reject(e));
     }
 
     /**

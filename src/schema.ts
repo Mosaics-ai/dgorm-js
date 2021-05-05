@@ -64,6 +64,8 @@ class Schema {
     this.name = name;
     this.original = original;
 
+    console.log(`dgorm.Schema - original SchemaFields: `, original);
+
     this.schema = this._generate(name, original);
     this.typeDefs = this._generate_types(name, original);
     this.graphQl = this._generate_graphql(name, original);

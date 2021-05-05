@@ -7,7 +7,7 @@
  * @author George Patterson <george@mosaics.ai>
  */
 
-import fetch from 'node-fetch';
+import fetch, { HeadersInit } from 'node-fetch';
 
 export interface IGraphQLBody {
     query?: string;
@@ -23,61 +23,70 @@ const consoleCallout = (endpoint:string, route:string, ...args:any) => {
     console.log(`[${time}] --------------------------------------------------------------`);
 }
 
-const send = (endpoint:string, body: IGraphQLBody | string, route: string) => {
-    fetch(endpoint + route, {
+const send = (endpoint:string, body: IGraphQLBody | string, route: string, headers:HeadersInit = {} ) => {
+    return fetch(endpoint + route, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            ...headers
         },
         body: (typeof body === 'string') ? body : JSON.stringify(body)
     })
     .then(r => r.json())
-    .then((data:any) => consoleCallout(endpoint, route, data))
-    .catch((e:any) => consoleCallout(endpoint, route, e));
+    .then(({ data }:any) => {
+        consoleCallout(endpoint, route, data);
+        Promise.resolve(data);
+    })
+    .catch((e:any) => {
+        consoleCallout(endpoint, route, e);
+        Promise.reject(e);
+    });
 }
 
 // GraphQL Specific
 
-const sendGraphQL = (endpoint:string, body: IGraphQLBody | string) => {
+const sendGraphQL = (endpoint:string, body: IGraphQLBody | string, headers:HeadersInit = {} ) => {
     const route = '/graphql';
-    send(endpoint, body, route);
+    return send(endpoint, body, route, headers);
 }
 
-const sendAdmin = (endpoint:string, body: IGraphQLBody | string) => {
+const sendAdmin = (endpoint:string, body: IGraphQLBody | string, headers:HeadersInit = {} ) => {
     const route = '/admin';
-    send(endpoint, body, route);
+    return send(endpoint, body, route, headers);
 }
 
-const validateSchema = (endpoint:string, schema:string) => {
+const validateSchema = (endpoint:string, schema:string, headers:HeadersInit = {} ) => {
     const route = '/admin/schema/validate';
     const body:string = schema;
-    send(endpoint, body, route);
+    return send(endpoint, body, route, headers);
 }
 
-const updateSchema = (endpoint:string, schema:string) => {
+const updateSchema = (endpoint:string, schema:string, headers:HeadersInit = {} ) => {
     const route = '/admin/schema';
     const body:string = schema;
-    send(endpoint, body, route);
+    return send(endpoint, body, route, headers);
 }
 
-const getHealth = (endpoint:string) => {
+const getHealth = (endpoint:string, headers:HeadersInit = {} ) => {
     const route = '/admin';
     const body:string = `{ 
-        health {
-            instance
-            address
-            status
-            group
-            version
-            uptime
-            lastEcho
-            ongoing
-            indexing
-            ee_features
+        query Health {
+            health {
+                instance
+                address
+                status
+                group
+                version
+                uptime
+                lastEcho
+                ongoing
+                indexing
+                ee_features
+            }
         }
     }`;
-    send(endpoint, body, route);
+    return send(endpoint, body, route, headers);
 }
 
 export default { sendGraphQL, sendAdmin, updateSchema, validateSchema, getHealth }
