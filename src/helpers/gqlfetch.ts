@@ -35,11 +35,11 @@ const send = (endpoint:string, body: IGraphQLBody | string, route: string, heade
     })
     .then(r => r.json())
     .then(({ data }:any) => {
-        consoleCallout(endpoint, route, data);
+        consoleCallout(endpoint, route, body, data);
         return Promise.resolve(data);
     })
     .catch((e:any) => {
-        consoleCallout(endpoint, route, e);
+        consoleCallout(endpoint, route, body, e);
         return Promise.reject(e);
     });
 }
