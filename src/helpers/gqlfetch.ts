@@ -70,22 +70,23 @@ const updateSchema = (endpoint:string, schema:string, headers:HeadersInit = {} )
 
 const getHealth = (endpoint:string, headers:HeadersInit = {} ) => {
     const route = '/admin';
-    const body:string = `{ 
-        query Health {
-            health {
-                instance
-                address
-                status
-                group
-                version
-                uptime
-                lastEcho
-                ongoing
-                indexing
-                ee_features
-            }
-        }
-    }`;
+    const body = {
+        query: ` 
+            query Health {
+                health {
+                    instance
+                    address
+                    status
+                    group
+                    version
+                    uptime
+                    lastEcho
+                    ongoing
+                    indexing
+                    ee_features
+                }
+            }`
+        };
     return send(endpoint, body, route, headers);
 }
 

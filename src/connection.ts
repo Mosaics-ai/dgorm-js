@@ -112,7 +112,7 @@ export default class Connection {
       this.graphql = config.graphql;
 
       try {
-        gqlfetch.getHealth(this.graphql);
+        gqlfetch.getHealth(this.graphql).then(r => console.debug('dgorm getHealth: ', r));
       } catch(e) {
         console.log(`Error: GraphQL getHealth (${this.graphql})`, e);
       }
