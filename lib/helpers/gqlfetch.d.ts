@@ -12,10 +12,10 @@ export interface IGraphQLBody {
     variables?: string;
 }
 declare const _default: {
-    sendGraphQL: (endpoint: string, body: string | IGraphQLBody, headers?: HeadersInit) => Promise<void>;
-    sendAdmin: (endpoint: string, body: string | IGraphQLBody, headers?: HeadersInit) => Promise<void>;
-    updateSchema: (endpoint: string, schema: string, headers?: HeadersInit) => Promise<void>;
-    validateSchema: (endpoint: string, schema: string, headers?: HeadersInit) => Promise<void>;
-    getHealth: (endpoint: string, headers?: HeadersInit) => Promise<void>;
+    sendGraphQL: (endpoint: string, body: string | IGraphQLBody, headers?: HeadersInit) => Promise<any>;
+    sendAdmin: (endpoint: string, body: string | IGraphQLBody, headers?: HeadersInit) => Promise<any>;
+    updateSchema: (endpoint: string, schema: string, headers?: HeadersInit) => Promise<any>;
+    validateSchema: (endpoint: string, schema: string, headers?: HeadersInit) => Promise<any>;
+    getHealth: (endpoint: string, headers?: HeadersInit) => Promise<any>;
 };
 export default _default;
