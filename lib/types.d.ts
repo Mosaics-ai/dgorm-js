@@ -23,7 +23,6 @@ export interface Token {
     hash?: boolean;
 }
 export interface FieldProps {
-    [key: string]: string | Token | boolean;
     type: string;
     index?: boolean;
     token?: string | Token;
