@@ -16,6 +16,12 @@
  */
 import Schema from './schema';
 /**
+ * Types
+ *
+ * dgraph-orm feilds Types
+ */
+import Types from './helpers/types';
+/**
  * Connection
  *
  * dgraph-orm Connection class
@@ -181,6 +187,7 @@ declare class DgraphORM {
      */
     mutate(mutation: string): Promise<any>;
 }
+export { Types as dgTypes };
 export * from './types';
 declare const _default: DgraphORM;
 export default _default;

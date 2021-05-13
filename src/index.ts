@@ -212,7 +212,7 @@ class DgraphORM {
    * 
    * @returns void
    */
-   async _generate_schema(schema: Array<string>, background: boolean = true): Promise<any> {
+   async _generate_schema(schema: Array<string>, background: boolean = false): Promise<any> {
     // console.debug("DGraphORM._generateSchema: ", schema);
     if(!schema) {
       return;
@@ -303,5 +303,6 @@ class DgraphORM {
 }
 
 // Include types
+export { Types as dgTypes }
 export * from './types';
 export default new DgraphORM();
