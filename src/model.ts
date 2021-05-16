@@ -150,13 +150,17 @@ class Model {
     } else {
       _data = {};
       params.field.forEach((_field: string) => {
-        const _attributes = params.attributes && params.attributes[_field] ? params.attributes[_field] : ['uid'];
-        if(!_user[0][_field]) {
+        try {
+          const _attributes = params.attributes && params.attributes[_field] ? params.attributes[_field] : ['uid'];
+          if(!_user[0][_field]) {
+            _data[_field] = null;
+          } else {
+            _data[_field] = _user[0][_field].map((_relation: any) => {
+              return merge(_relation, _attributes);
+            });
+          }
+        } catch(e) {
           _data[_field] = null;
-        } else {
-          _data[_field] = _user[0][_field].map((_relation: any) => {
-             return merge(_relation, _attributes);
-          });
         }
       });
     }
