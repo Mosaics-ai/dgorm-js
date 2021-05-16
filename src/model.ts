@@ -517,8 +517,11 @@ class Model {
         mu.setCommitNow(true);
         mu.setSetJson(mutation);
 
-        await _txn.mutate(mu);
-        return resolve(true);
+        const response = await _txn.mutate(mu);
+        console.debug("");
+        console.debug("model._update (response): ", response);
+        console.debug("")
+        return resolve(response);
       } catch (error) {
         console.error("Error: dgOrm.model._update: ", error);
         await _txn.discard();
@@ -570,7 +573,7 @@ class Model {
 
     // 
     if(typeof uid === 'string') {
-      return this._update(mutation, uid);
+      return await this._update(mutation, uid);
     }
 
     if(typeof uid === 'object') {
@@ -579,14 +582,14 @@ class Model {
         filter: uid
       });
 
-      console.log("dgOrm.model.update (uid=object): ", data);
+      console.log("dgOrm.model.update (pre-update) (uid=object): ", data);
 
-      if(data.length > 0) {
+      if(data && data.length > 0) {
         const _uids: Array<string> = pluck(data, 'uid');
-        _uids.forEach(async (_uid: string) => {
-          console.log("dgOrm.model.update (_uids.forEach): ", _uid, mutation);
-          await this._update(mutation, _uid);
-        });
+        console.debug(`Updating uids ${_uids} `);
+        const _uidPromises = _uids.map(_uid => this._update(mutation, _uid));
+        let values = await Promise.all(_uidPromises);
+        return values;
       }
     }
   }
