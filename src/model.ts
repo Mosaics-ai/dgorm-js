@@ -141,28 +141,46 @@ class Model {
 
     let _data: any = null;
 
-    if(params.field.length === 1 && _user[0][params.field[0]] && _user[0][params.field[0]].length > 0) {
-      const _attributes = params.attributes && params.attributes[params.field[0]] ? params.attributes[params.field[0]] : ['uid'];
-      _data = _user[0][params.field[0]].map((_relation: any) => {
-        return merge(_relation, _attributes);
-      });
+    const user = (_user && _user.length > 0) ? _user[0] : null;
 
-    } else {
-      _data = {};
-      params.field.forEach((_field: string) => {
-        try {
-          const _attributes = params.attributes && params.attributes[_field] ? params.attributes[_field] : ['uid'];
-          if(!_user[0][_field]) {
+    if(user) { 
+      const oneField = params.field.length === 1;
+      if(oneField && user[params.field[0]] && user[params.field[0]].length > 0 ) {
+        const _field = params.field[0];
+        const _attributes = (params.attributes && params.attributes[_field])
+          ? params.attributes[_field]
+          : ['uid'];
+        
+        _data = user[_field].map((_relation: string) => {
+          return merge(_relation, _attributes);
+        });
+      } else {
+        _data = {};
+        params.field.forEach((_field:string) => {    
+          const _attributes = (params.attributes && params.attributes[_field])
+            ? params.attributes[_field]
+            : ['uid'];
+          if(!user[_field]) {
+            // Doesn't exist on user
             _data[_field] = null;
+          } else if(!Array.isArray(user[_field])) {
+            // Maybe object?
+            _data[_field] = user[_field]
           } else {
-            _data[_field] = _user[0][_field].map((_relation: any) => {
-              return merge(_relation, _attributes);
-            });
+            let relation = null;
+            try {
+              relation = user[_field].map((_relation:any) => {
+                return merge(_relation, _attributes);
+              });
+            } catch(e) {
+              console.debug("Error merging relation: ", user, params, e);
+            }
+            _data[_field] = relation;
           }
-        } catch(e) {
-          _data[_field] = null;
-        }
-      });
+        });
+      }
+    } else {
+      console.debug("model.relation: No user returned.", uid, params);
     }
 
     return new Promise((resolve: Function) => {
