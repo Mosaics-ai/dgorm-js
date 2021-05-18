@@ -175,9 +175,14 @@ class DgraphORM {
 
       this.models[schema.name] = schema.original;
 
+      const _self = this;
       // predicates & types & graphql
-      this._generate_schema(schema.schema);
-      this._generate_schema(schema.typeDefs);
+      this._generate_schema(schema.schema).then(r => {
+        console.debug("_set_model._generate_schema result (schema.schema): ", r);
+        _self._generate_schema(schema.typeDefs).then(r => {
+          console.debug("_set_model._generate_schema result (schema.typeDefs): ", r);
+        });
+      })
     }
   }
 
@@ -219,7 +224,7 @@ class DgraphORM {
    * 
    * @returns void
    */
-   async _generate_schema(schema: Array<string>, background: boolean = false): Promise<any> {
+   async _generate_schema(schema: Array<string>, background: boolean = true): Promise<any> {
     // console.debug("DGraphORM._generateSchema: ", schema);
     if(!schema) {
       return;
@@ -229,8 +234,13 @@ class DgraphORM {
     op.setRunInBackground(background);
     op.setSchema(schema.join("\n"));
     
-    this.connection.client.alter(op)
-      .then(r => console.log(r), e => console.error('Error - dgOrm._generate_schema.rejected: ', e, schema))
+    return this.connection.client.alter(op)
+      .then(
+        r => {
+          console.log(r, schema);
+          return Promise.resolve(r);
+        },
+        e => console.error('Error - dgOrm._generate_schema.rejected: ', e, schema))
       .catch(e => console.error('Error - dgOrm._generate_schema: ', e, schema));
   }
 
