@@ -115,6 +115,13 @@ class DgraphORM {
   Schema: {new(name: string, schema: SchemaFields): Schema} = Schema;
 
   /**
+   * Retries
+   * 
+   * @type number
+   */
+  retries: number = 0;
+
+  /**
    * contructor
    */
   constructor() {
@@ -223,8 +230,8 @@ class DgraphORM {
     op.setSchema(schema.join("\n"));
     
     this.connection.client.alter(op)
-      .then(r => console.log(r), e => console.error('Error - dgOrm._generate_schema.rejected: ', e))
-      .catch(e => console.error('Error - dgOrm._generate_schema: ', e));
+      .then(r => console.log(r), e => console.error('Error - dgOrm._generate_schema.rejected: ', e, schema))
+      .catch(e => console.error('Error - dgOrm._generate_schema: ', e, schema));
   }
 
   /**

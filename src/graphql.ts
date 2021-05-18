@@ -108,9 +108,9 @@ import { resolve } from 'node:path';
         }
     }
 
-    getHealth(): void {
+    getHealth(): Promise<any> {
         if(this.graphql) {
-            gqlfetch.getHealth(this.graphql);
+            return gqlfetch.getHealth(this.graphql);
         } else {
             const error:string = "No endpoint defined";
             console.error(error);

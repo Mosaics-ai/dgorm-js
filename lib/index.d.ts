@@ -88,6 +88,12 @@ declare class DgraphORM {
         new (name: string, schema: SchemaFields): Schema;
     };
     /**
+     * Retries
+     *
+     * @type number
+     */
+    retries: number;
+    /**
      * contructor
      */
     constructor();

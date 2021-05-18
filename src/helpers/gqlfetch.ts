@@ -17,10 +17,10 @@ export interface IGraphQLBody {
 
 const consoleCallout = (endpoint:string, route:string, ...args:any) => {
     const time = Date.now();
-    console.log(`[${time}] --------------------------------------------------------------\n`);
-    console.log(`[${time}] DGraphQL Response - ${endpoint}${route}: \n`);
-    console.log(`[${time}] `, ...args, '\n');
-    console.log(`[${time}] --------------------------------------------------------------`);
+    console.debug(`[${time}] --------------------------------------------------------------\n`);
+    console.debug(`[${time}] DGraphQL Response - ${endpoint}${route}: \n`);
+    console.debug(`[${time}] `, ...args, '\n');
+    console.debug(`[${time}] --------------------------------------------------------------`);
 }
 
 const send = (endpoint:string, body: IGraphQLBody | string, route: string, headers:HeadersInit = {} ) => {
