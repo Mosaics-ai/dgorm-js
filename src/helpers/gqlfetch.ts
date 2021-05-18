@@ -33,10 +33,20 @@ const send = (endpoint:string, body: IGraphQLBody | string, route: string, heade
         },
         body: (typeof body === 'string') ? body : JSON.stringify(body)
     })
-    .then(r => r.json())
-    .then(({ data }:any) => {
-        consoleCallout(endpoint, route, body, data);
-        return Promise.resolve(data);
+    .then(r => {
+        const res = r.json();
+        return (res) ? res : r;
+    })
+    .then((response:any) => {
+        if(!response) {
+            const msg = "gqlfetch.send Error.";
+            console.error(msg, endpoint, route, response);
+            throw new Error(msg);
+        }
+        const { data } = response;
+        const resData = data ?? response;
+        consoleCallout(endpoint, route, body, resData);
+        return Promise.resolve(resData);
     })
     .catch((e:any) => {
         consoleCallout(endpoint, route, body, e);
