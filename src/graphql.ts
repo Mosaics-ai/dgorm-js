@@ -96,6 +96,8 @@ import { resolve } from 'node:path';
 
     updateSchema(): Promise<any> {
         if(this.graphql && this.schema) {
+            console.debug("dgormjs.GraphQL.updateSchema: ", this.graphql, this.schema);
+            
             return gqlfetch.updateSchema(this.graphql, this.schema)
                 .then(r => Promise.resolve(r))
                 .catch(e => Promise.reject(e));
