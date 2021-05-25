@@ -27,7 +27,6 @@
   */
  import Connection from './connection';
 import gqlfetch from './helpers/gqlfetch';
-import { resolve } from 'node:path';
 
  /**
   * GraphQL
