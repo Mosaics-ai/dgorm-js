@@ -270,15 +270,33 @@ class Model {
     return new Promise(async (resolve: Function, reject: Function) => {
       const _txn: Txn = this.connection.client.newTxn();
 
-      console.log(`Model._execute: `, query);
+      console.debug('Model._execute (_txn): ', _txn);
+      console.debug(`Model._execute: `, query);
+
+      let res;
 
       try {
-        const res = await _txn.query(query);
+        res = await _txn.query(query);
+      } catch (error) {
+        console.debug(`Error: Model._execute - `, error);
+        await _txn.discard();
+        return reject(error);
+      }
+
+      if(!res) {
+        console.debug("Model._execute, query res not defined", res, query);
+        await _txn.discard();
+        return resolve(null);
+      }
+
+      try {
         const rawResponseJson = res.getJson();
         console.log(`Model._execute - raw response (${this.schema.name}): `, rawResponseJson);
-        return resolve(rawResponseJson[this.schema.name]);
+        const name = this.schema.name;
+        const response = rawResponseJson[name] ?? rawResponseJson;
+        return resolve(response);
       } catch (error) {
-        console.log(`Error: Model._execute - `, error);
+        console.debug(`Error: Model._execute - `, error);
         await _txn.discard();
         return reject(error);
       } finally {

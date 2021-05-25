@@ -71,6 +71,10 @@ export const checkOptions = (name: string, options: string | FieldProps): void =
       throw new Error('[Type Error]: In ' + name + ' of type ' + options.type.toUpperCase() + ', exact or hash index types shouldn\'t be used alongside the term index type.');
     }
 
+    // if(options.token.exact && options.upsert) {
+    //   throw new Error('[Type Error]: In ' + name + ' of type ' + options.type.toUpperCase() + ', exact index types shouldn\'t be used on the upsert type.');
+    // }
+
     Object.keys(options.token).forEach((key: string) => {
       if(tokenmap[options.type].indexOf(key) === -1) {
         throw new Error('[Type Error]: In ' + name + ' of type ' + options.type.toUpperCase() + ', for token only ' + tokenmap[options.type].join(', ') + ' are allowd.');
