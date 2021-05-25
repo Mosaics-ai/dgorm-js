@@ -6,6 +6,8 @@
  * @author George Patterson <george@mosaics.ai>
  */
 
+import * as grpc from "@grpc/grpc-js";
+
 /**
  * dgraph
  * 
@@ -30,7 +32,7 @@ const _config: ConnectionConfig = {
   host: '127.0.0.1',
   port: 9080,
   debug: true,
-  credentails: dgraph.grpc.credentials.createInsecure(),
+  credentails: grpc.credentials.createInsecure(),
   graphql: '', // 'http://localhost:4000'
 }
 
@@ -89,12 +91,14 @@ export default class Connection {
       ...config
     }
 
-    console.log("connection.constructor (config): ", this.config);
+    logger("connection.constructor (config): ", this.config);
 
     // DQL
     try {
+      const host = `${this.config.host}:${this.config.port}`;
+      logger(`dgorm-js connecting to ${host}`);
       this.clientStub = new dgraph.DgraphClientStub(
-        `${this.config.host}:${this.config.port}`,
+        host,
         this.config.credentails
       );
   
@@ -104,7 +108,7 @@ export default class Connection {
         this.client.setDebugMode(true);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
 
     if(this.config.graphql) {
@@ -114,7 +118,7 @@ export default class Connection {
       try {
         gqlfetch.getHealth(this.graphql).then(r => console.debug('dgorm getHealth: ', r));
       } catch(e) {
-        console.log(`Error: GraphQL getHealth (${this.graphql})`, e);
+        console.error(`Error: GraphQL getHealth (${this.graphql})`, e);
       }
     }
   }

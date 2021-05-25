@@ -49,6 +49,13 @@ declare class DgraphORM {
      */
     private _logger;
     /**
+     * _logger
+     *
+     * @type Function
+     * Methods for logging
+     */
+    private _error_logger;
+    /**
      * connection
      *
      * @type Connection
@@ -98,6 +105,22 @@ declare class DgraphORM {
      */
     constructor();
     /**
+     * connect
+     *
+     * @param config {ConnectionConfig}
+     *
+     * @returns void
+     */
+    connect(config: ConnectionConfig): Connection;
+    /**
+     * _create_connection
+     *
+     * @param config {ConnectionConfig}
+     *
+     * @returns Connection
+     */
+    private _create_connection;
+    /**
      * disconnect
      *
      * @returns void
@@ -111,15 +134,23 @@ declare class DgraphORM {
      *
      * @returns void
      */
-    logging(callback: Function): void;
+    logging(logCallback: Function, errorCallback: Function): void;
     /**
      * _log
      *
-     * @param message {string}
+     * @param args {any[]}
      *
      * @returns void
      */
     private _log;
+    /**
+     * _error
+     *
+     * @param args {any[]}
+     *
+     * @returns void
+     */
+    private _error;
     /**
      * model
      *
@@ -136,6 +167,22 @@ declare class DgraphORM {
      * @returns void
      */
     private _set_model;
+    /**
+     * createModel
+     *
+     * @param schema {Schema}
+     *
+     * @returns Promise<Model>
+     */
+    createModel(schema: Schema, background?: boolean): Promise<Model>;
+    /**
+     * set_model
+     *
+     * @param schema {Schema}
+     *
+     * @returns void
+     */
+    private set_model;
     /**
      * _set_graphql
      *
@@ -160,22 +207,6 @@ declare class DgraphORM {
      * @returns GraphQL
      */
     graphql(): GraphQL;
-    /**
-     * connect
-     *
-     * @param config {ConnectionConfig}
-     *
-     * @returns void
-     */
-    connect(config: ConnectionConfig): Connection;
-    /**
-     * _create_connection
-     *
-     * @param config {ConnectionConfig}
-     *
-     * @returns Connection
-     */
-    private _create_connection;
     /**
      * query
      *

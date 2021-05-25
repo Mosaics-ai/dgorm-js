@@ -73,6 +73,14 @@ class DgraphORM {
   private _logger: Function = () => {};
 
   /**
+   * _logger
+   * 
+   * @type Function
+   * Methods for logging
+   */
+   private _error_logger: Function = () => {};
+
+  /**
    * connection
    * 
    * @type Connection
@@ -126,9 +134,40 @@ class DgraphORM {
    */
   constructor() {
     this.connection = this._create_connection();
-    this._logger = console.log;
+    this._logger = console.debug;
+    this._error_logger = console.error;
   }
 
+  /**
+   * connect
+   * 
+   * @param config {ConnectionConfig}
+   * 
+   * @returns void
+   */
+   connect(config: ConnectionConfig): Connection  {
+    console.debug('dgorm.connect (config): ', config);
+    this.connection = this._create_connection(config);
+
+    if(this.connection) {
+      this._log("DGraphORM.connect - connection", this.connection);
+      this.connected = true;
+    }
+
+    return this.connection;
+  }
+
+  /**
+   * _create_connection
+   * 
+   * @param config {ConnectionConfig}
+   * 
+   * @returns Connection
+   */
+   private _create_connection(config: ConnectionConfig = null): Connection {
+    return new Connection(config, this._log);
+  }
+  
   /**
    * disconnect
    * 
@@ -146,20 +185,32 @@ class DgraphORM {
    * 
    * @returns void
    */
-  logging(callback: Function): void {
-    console.log("DGraphORM.logging - setting logger", callback);
-    this._logger = callback;
+  logging(logCallback: Function, errorCallback: Function): void {
+    console.debug("DGraphORM.logging - setting logger", logCallback, errorCallback);
+    this._logger = logCallback;
+    this._error_logger = errorCallback;
   }
 
   /**
    * _log
    * 
-   * @param message {string}
+   * @param args {any[]}
    * 
    * @returns void
    */
-  private _log(message: string): void {
-    this._logger(message);
+  private _log(...args:any): void {
+    this._logger(...args);
+  }
+
+  /**
+   * _error
+   * 
+   * @param args {any[]}
+   * 
+   * @returns void
+   */
+   private _error(...args:any): void {
+    this._error_logger(...args);
   }
 
   /**
@@ -197,6 +248,49 @@ class DgraphORM {
   }
 
   /**
+   * createModel
+   * 
+   * @param schema {Schema}
+   * 
+   * @returns Promise<Model>
+   */
+   async createModel(schema: Schema, background:boolean = true): Promise<Model> {
+    // DQL
+    await this.set_model(schema, background);
+    this._set_graphql(schema);
+    return new Model(schema, this.models, this.connection, console.log);
+  }
+
+  /**
+   * set_model
+   * 
+   * @param schema {Schema}
+   * 
+   * @returns void
+   */
+   private async set_model(schema: Schema, background:boolean = true): Promise<void> {
+    // console.log("dgOrm._set_model: ", schema);
+    if(schema.name && typeof this.models[schema.name] === 'undefined') {
+
+      this.models[schema.name] = schema.original;
+
+      // predicates
+      try {
+        await this._generate_schema(schema.schema, background);
+      } catch(e) {
+        this._error('root.set_model._generate_schema error: ', e, schema.schema);
+      }
+
+      // types
+      try {
+        await this._generate_schema(schema.typeDefs, background);
+      } catch(e) {
+        this._error('root._set_model._generate_schema (types) error: ', e, schema.typeDefs);
+      }
+    }
+  }
+
+  /**
    * _set_graphql
    * 
    * @param schema {Schema}
@@ -205,11 +299,11 @@ class DgraphORM {
    */
    private _set_graphql(schema: Schema): void {
     // Save schema
-    console.log("dgOrm._set_schema: ", schema);
+    this._log("dgOrm._set_schema: ", schema);
     if(schema.name && typeof this.graphqls[schema.name] === 'undefined' && schema.graphQl) {
       this.graphqls[schema.name] = schema.graphQl.join('\n');
     } else {
-      console.log(`dgOrm._set_graphql - No graphql for ${schema.name}`);
+      this._log(`dgOrm._set_graphql - No graphql for ${schema.name}`);
     }
   }
 
@@ -230,7 +324,12 @@ class DgraphORM {
     op.setRunInBackground(background);
     op.setSchema(schema.join("\n"));
     
-    this.connection.client.alter(op).catch(e => { console.error('dgorm-js._generate_schema: ', e) });
+    try {
+      await this.connection.client.alter(op);
+    } catch(e) {
+      this._error('root._generate_schema', e);
+      throw(e);
+    }
   }
 
   /**
@@ -245,36 +344,6 @@ class DgraphORM {
     const graphqlSchema:string = Object.values(this.graphqls).join('\n');
     console.log("Generated GraphQL Schema: ", graphqlSchema);
     return new GraphQL(graphqlSchema, this.models, this.connection, console.log);
-  }
-  
-  /**
-   * connect
-   * 
-   * @param config {ConnectionConfig}
-   * 
-   * @returns void
-   */
-  connect(config: ConnectionConfig): Connection  {
-    console.debug('dgorm.connect (config): ', config);
-    this.connection = this._create_connection(config);
-
-    if(this.connection) {
-      console.log("DGraphORM.connect - connection", this.connection);
-      this.connected = true;
-    }
-
-    return this.connection;
-  }
-
-  /**
-   * _create_connection
-   * 
-   * @param config {ConnectionConfig}
-   * 
-   * @returns Connection
-   */
-   private _create_connection(config: ConnectionConfig = null): Connection {
-    return new Connection(config, this._log.bind(this));
   }
   
   /**
