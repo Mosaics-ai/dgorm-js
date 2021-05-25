@@ -148,7 +148,7 @@ class DgraphORM {
     this.connection = this._create_connection(config);
 
     if(this.connection) {
-      this._log("DGraphORM.connect - connection", this.connection);
+      this._log("DGraphORM.connect - connection", this.connection.client);
       this.connected = true;
     }
 
