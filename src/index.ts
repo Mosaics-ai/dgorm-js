@@ -70,7 +70,7 @@ class DgraphORM {
    * @type Function
    * Methods for logging
    */
-  private _logger: Function = () => {};
+  private _log: Function = console.debug;
 
   /**
    * _logger
@@ -78,7 +78,7 @@ class DgraphORM {
    * @type Function
    * Methods for logging
    */
-   private _error_logger: Function = () => {};
+   private _error: Function = console.error;
 
   /**
    * connection
@@ -133,8 +133,6 @@ class DgraphORM {
    * contructor
    */
   constructor() {
-    this._logger = console.debug;
-    this._error_logger = console.error;
     this.connection = this._create_connection();
   }
 
@@ -145,7 +143,7 @@ class DgraphORM {
    * 
    * @returns void
    */
-   connect(config: ConnectionConfig): Connection  {
+   connect = (config: ConnectionConfig): Connection => {
     console.debug('dgorm.connect (config): ', config);
     this.connection = this._create_connection(config);
 
@@ -165,7 +163,7 @@ class DgraphORM {
    * @returns Connection
    */
    private _create_connection(config: ConnectionConfig = null): Connection {
-    return new Connection(config, this._log.bind(this));
+    return new Connection(config, this._log);
   }
   
   /**
@@ -187,30 +185,8 @@ class DgraphORM {
    */
   logging(logCallback: Function, errorCallback: Function): void {
     console.debug("DGraphORM.logging - setting logger", logCallback, errorCallback);
-    this._logger = logCallback.bind(this);
-    this._error_logger = errorCallback.bind(this);
-  }
-
-  /**
-   * _log
-   * 
-   * @param args {any[]}
-   * 
-   * @returns void
-   */
-  private _log(...args:any): void {
-    this._logger(...args);
-  }
-
-  /**
-   * _error
-   * 
-   * @param args {any[]}
-   * 
-   * @returns void
-   */
-   private _error(...args:any): void {
-    this._error_logger(...args);
+    this._log = logCallback;
+    this._error = errorCallback;
   }
 
   /**

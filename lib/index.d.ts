@@ -47,14 +47,14 @@ declare class DgraphORM {
      * @type Function
      * Methods for logging
      */
-    private _logger;
+    private _log;
     /**
      * _logger
      *
      * @type Function
      * Methods for logging
      */
-    private _error_logger;
+    private _error;
     /**
      * connection
      *
@@ -111,7 +111,7 @@ declare class DgraphORM {
      *
      * @returns void
      */
-    connect(config: ConnectionConfig): Connection;
+    connect: (config: ConnectionConfig) => Connection;
     /**
      * _create_connection
      *
@@ -135,22 +135,6 @@ declare class DgraphORM {
      * @returns void
      */
     logging(logCallback: Function, errorCallback: Function): void;
-    /**
-     * _log
-     *
-     * @param args {any[]}
-     *
-     * @returns void
-     */
-    private _log;
-    /**
-     * _error
-     *
-     * @param args {any[]}
-     *
-     * @returns void
-     */
-    private _error;
     /**
      * model
      *

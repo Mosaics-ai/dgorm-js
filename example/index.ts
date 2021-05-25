@@ -13,7 +13,7 @@ import DgORM from '../src';
  *  credentails: // gprc credential default grpc.credentials.createInsecure()
  * }
  */
-const dgraph = new DgORM();
+const dgraph = DgORM;
 
 dgraph.connect({
   /**
@@ -59,7 +59,7 @@ dgraph.connect({
  * 
  * Set your own logger Function
  */
-dgraph.logging(console.log);
+dgraph.logging(console.log, console.error);
 
 /**
  * dgraph.Schema
