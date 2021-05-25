@@ -187,8 +187,8 @@ class DgraphORM {
    */
   logging(logCallback: Function, errorCallback: Function): void {
     console.debug("DGraphORM.logging - setting logger", logCallback, errorCallback);
-    this._logger = logCallback;
-    this._error_logger = errorCallback;
+    this._logger = logCallback.bind(this);
+    this._error_logger = errorCallback.bind(this);
   }
 
   /**
