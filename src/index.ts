@@ -133,9 +133,9 @@ class DgraphORM {
    * contructor
    */
   constructor() {
-    this.connection = this._create_connection();
     this._logger = console.debug;
     this._error_logger = console.error;
+    this.connection = this._create_connection();
   }
 
   /**
@@ -165,7 +165,7 @@ class DgraphORM {
    * @returns Connection
    */
    private _create_connection(config: ConnectionConfig = null): Connection {
-    return new Connection(config, this._log);
+    return new Connection(config, this._log.bind(this));
   }
   
   /**
