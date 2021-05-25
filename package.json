@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/google-protobuf": "^3.15.2",
     "@types/node": "^12.20.11",
+    "@types/protobufjs": "^6.0.0",
     "nodemon": "^1.19.4",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
@@ -34,6 +35,7 @@
     "@types/node-fetch": "^2.5.10",
     "dgraph-js": "^21.3.1",
     "graphql-request": "^3.4.0",
+    "grpc": "^1.24.10",
     "node-fetch": "^2.6.1",
     "protobufjs": "^6.11.2"
   }

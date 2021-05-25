@@ -121,6 +121,14 @@ declare class DgraphORM {
      */
     private _log;
     /**
+     * model
+     *
+     * @param schema {Schema}
+     *
+     * @returns Model
+     */
+    model(schema: Schema): Model;
+    /**
      * _set_model
      *
      * @param schema {Schema}
@@ -136,14 +144,6 @@ declare class DgraphORM {
      * @returns void
      */
     private _set_graphql;
-    /**
-     * model
-     *
-     * @param schema {Schema}
-     *
-     * @returns Model
-     */
-    model(schema: Schema): Model;
     /**
      * _generate_schema
      *
