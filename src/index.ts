@@ -241,8 +241,7 @@ class DgraphORM {
         const { silent } = retryConfig;
         
         const _setModel = this.set_model.bind(this, schema, background);
-        const _setTypes = this.set_types.bind(this, schema, background);
-
+        
         // Predicates
         try {
             const response = await retry(_setModel, retryConfig);
@@ -250,30 +249,6 @@ class DgraphORM {
         } catch(e) {
             this._error("Max retries - {set_model}", e);
             if(!silent) {
-                throw(e);
-            }
-        }
-
-        // Give the database time
-        await sleep(1000);
-
-        // Types
-        try {
-            const response = await retry(_setTypes, retryConfig);
-            this._log('_setModel response: ', response);
-        } catch(e) {
-            this._error("Max retries - {set_types}", e);
-            const msg = (e && e.message) ? e.message : e;
-
-            // Needs more time --- hack
-            if(e.includes('Schema does not contain a matching predicate for field')) {
-                // Predicates
-                try {
-                    await retry(_setModel, retryConfig);
-                    await sleep(1000);
-                    await retry(_setTypes, retryConfig);
-                } catch {}
-            } else if(!silent) {
                 throw(e);
             }
         }
@@ -297,7 +272,12 @@ class DgraphORM {
     
         // predicates
         try {
-            return await this._generate_schema(schema.schema, background);
+            const _schema = [
+                ...schema.schema,
+                ...schema.typeDefs || []
+            ]
+
+            return await this._generate_schema(_schema, background);
         } catch(e) {
             this._error('root.set_model._generate_schema error: ', e, schema.schema);
             throw(e);
