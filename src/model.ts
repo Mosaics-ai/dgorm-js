@@ -317,9 +317,18 @@ class Model {
         }
 
         const _params: any = this._validate(this.schema.original, params);
-
         // const query: Query = new Query(type, field, value, _params, this.schema.name, this._logger);
         const query: Query = new Query(type, field, value, _params, this.schema.name, console.log);
+
+        console.debug("-------------------------------------------------------")
+        console.debug("-------------------------------------------------------")
+        console.debug("_methods: ");
+        console.debug(" Type: ", type);
+        console.debug(" Value: ", value);
+        console.debug(" Attributes: ", _params);
+        console.debug(" Query: ", query.query);
+        console.debug("-------------------------------------------------------")
+        console.debug("-------------------------------------------------------")
         return this._execute(query.query);
     }
 
