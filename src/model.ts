@@ -394,7 +394,7 @@ class Model {
         this._check_attributes(this.schema.original, data, true);
         console.debug("model.create [before _parse_mutation] (data)");
         console.dir(data, { depth: 5 });
-        const mutation = this._parse_mutation(data, this.schema.name);
+        const mutation = this._parse_mutation(data, this.schema.name, this.schema.original);
         console.debug("model.create [after _parse_mutation] (mutation)");
         console.dir(mutation, { depth: 5 });
         return this._create(mutation, params);
@@ -486,7 +486,7 @@ class Model {
             console.debug("model._parse_mutation [iterating over mutation keys] (_key/name): ", _key, name);
             console.debug("model._parse_mutation (is_relation)): ", this._is_relation(_key));
             if(this._is_relation(_key)) {
-                const relation_name = original[_key].model;
+                const relation_name = original[name].model;
                 const _relation = this._parse_mutation_relation(mutation, _key, relation_name);
                 if(_relation) {
                     _mutation[`${name}.${_key}`] = _relation;
@@ -595,7 +595,7 @@ class Model {
         console.dir(data);
 
         this._check_attributes(this.schema.original, data, true);
-        const mutation = this._parse_mutation(data, this.schema.name);
+        const mutation = this._parse_mutation(data, this.schema.name, this.schema.original);
 
         let _delete: any = null;
         let _isDelete: boolean = false;
