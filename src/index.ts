@@ -149,8 +149,7 @@ class DgraphORM {
         this.connection = this._create_connection(config);
 
         if(this.connection) {
-        this._log("DGraphORM.connect - connection", this.connection.client);
-        this.connected = true;
+            this.connected = true;
         }
 
         return this.connection;
@@ -230,6 +229,9 @@ class DgraphORM {
                 return await fn;
             } catch(e) {
                 this._log(`failed attempt ${i}`, e);
+                /**
+                 * @dev Possibly add condition check on error
+                 */
             }
 
             if(delay) {
@@ -340,7 +342,6 @@ class DgraphORM {
      */
     private _set_graphql(schema: Schema): void {
         // Save schema
-        this._log("dgOrm._set_schema: ", schema);
         if(schema.name && typeof this.graphqls[schema.name] === 'undefined' && schema.graphQl) {
             this.graphqls[schema.name] = schema.graphQl.join('\n');
         } else {
@@ -348,30 +349,28 @@ class DgraphORM {
         }
     }
 
-  /**
-   * _generate_schema
-   * 
-   * @param schema {Array<string>}
-   * 
-   * @returns void
-   */
-   async _generate_schema(schema: Array<string>, background: boolean = true): Promise<any> {
-    // console.debug("DGraphORM._generateSchema: ", schema);
-    if(!schema) {
-      return;
-    }
-    const op: Operation  = new this.connection.dgraph.Operation();
+    /**
+     * _generate_schema
+     * 
+     * @param schema {Array<string>}
+     * 
+     * @returns void
+     */
+    async _generate_schema(schema: Array<string>, background: boolean = true): Promise<any> {
+        // console.debug("DGraphORM._generateSchema: ", schema);
+        if(!schema) { return; }
+        const op: Operation  = new this.connection.dgraph.Operation();
 
-    op.setRunInBackground(background);
-    op.setSchema(schema.join("\n"));
-    
-    try {
-      await this.connection.client.alter(op);
-    } catch(e) {
-      this._error('root._generate_schema', e);
-      throw(e);
+        op.setRunInBackground(background);
+        op.setSchema(schema.join("\n"));
+        
+        try {
+            await this.connection.client.alter(op);
+        } catch(e) {
+            this._error('root._generate_schema', e);
+            throw(e);
+        }
     }
-  }
 
   /**
    * graphql
@@ -381,9 +380,8 @@ class DgraphORM {
    * @returns GraphQL
    */
   graphql(): GraphQL {
-    console.log('dgOrm.graphql() - this.graphqls =', this.graphqls);
     const graphqlSchema:string = Object.values(this.graphqls).join('\n');
-    console.log("Generated GraphQL Schema: ", graphqlSchema);
+    this._log("Generated GraphQL Schema: ", graphqlSchema);
     return new GraphQL(graphqlSchema, this.models, this.connection, console.log);
   }
   

@@ -15,13 +15,13 @@ export interface IGraphQLBody {
     variables?: string;
 }
 
-const consoleCallout = (endpoint:string, route:string, ...args:any) => {
-    const time = Date.now();
-    console.debug(`[${time}] --------------------------------------------------------------\n`);
-    console.debug(`[${time}] DGraphQL Response - ${endpoint}${route}: \n`);
-    console.debug(`[${time}] `, ...args, '\n');
-    console.debug(`[${time}] --------------------------------------------------------------`);
-}
+// const consoleCallout = (endpoint:string, route:string, ...args:any) => {
+//     const time = Date.now();
+//     console.debug(`[${time}] --------------------------------------------------------------\n`);
+//     console.debug(`[${time}] DGraphQL Response - ${endpoint}${route}: \n`);
+//     console.debug(`[${time}] `, ...args, '\n');
+//     console.debug(`[${time}] --------------------------------------------------------------`);
+// }
 
 const send = (endpoint:string, body: IGraphQLBody | string, route: string, headers:HeadersInit = {} ) => {
     return fetch(endpoint + route, {
@@ -45,11 +45,11 @@ const send = (endpoint:string, body: IGraphQLBody | string, route: string, heade
         }
         const { data } = response;
         const resData = data ?? response;
-        consoleCallout(endpoint, route, body, resData);
+        // consoleCallout(endpoint, route, body, resData);
         return Promise.resolve(resData);
     })
     .catch((e:any) => {
-        consoleCallout(endpoint, route, body, e);
+        // consoleCallout(endpoint, route, body, e);
         return Promise.reject(e);
     });
 }
