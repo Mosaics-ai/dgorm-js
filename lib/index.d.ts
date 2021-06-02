@@ -151,14 +151,19 @@ declare class DgraphORM {
      * @returns void
      */
     private _set_model;
+    retry: (fn: Promise<any>, n: number, delay?: number) => Promise<any>;
     /**
      * createModel
      *
      * @param schema {Schema}
+     * @param background {boolean} - run in background
+     * @param retries {number} - max retries. 1 = run normally
+     * @param retryDelay {number} - in milliseconds
+     * @param throw
      *
      * @returns Promise<Model>
      */
-    createModel(schema: Schema, background?: boolean): Promise<Model>;
+    createModel(schema: Schema, background?: boolean, retries?: number, retryDelay?: number, silent?: boolean): Promise<Model>;
     /**
      * set_model
      *
@@ -167,6 +172,14 @@ declare class DgraphORM {
      * @returns void
      */
     private set_model;
+    /**
+     * set_types
+     *
+     * @param schema {Schema}
+     *
+     * @returns void
+     */
+    private set_types;
     /**
      * _set_graphql
      *

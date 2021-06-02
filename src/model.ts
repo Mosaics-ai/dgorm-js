@@ -457,10 +457,11 @@ class Model {
   /**
    * _create
    * @param mutation {any}
-   *
-   * @returns Promise<any>
+   * @param params {any} params for returing created object
+   * 
+   * @returns Promise<any> Entire object will be returned using params
    */
-  private _create(mutation: any): Promise<any> {
+  private _create(mutation: any, params?:any): Promise<any> {
     return new Promise(async (resolve: Function, reject: Function) => {
       const _txn: Txn = this.connection.client.newTxn();
 
@@ -485,12 +486,11 @@ class Model {
         console.log( _mutation.getUidsMap());
         const _uid = _mutation.getUidsMap().values().next().value;
 
-        console.log(_uid);
-        console.log("");
+        console.log(`Returned uid: ${_uid}`);
         // _mutation.getUidsMap().forEach((uid:string, key:string) => console.log(`>>> | ${key} => ${uid}`));
 
         // const _uid: any = _mutation.getUidsMap()[0][0]; //_mutation.wrappers_[1].get('blank-0');
-        const data: any = await this._method('uid', _uid);
+        const data: any = await this._method('uid', _uid, params);
 
         return resolve(data[0]);
       } catch (error) {
@@ -506,13 +506,14 @@ class Model {
   /**
    * create
    * @param data {any}
-   *
-   * @returns Promise<any>
+   * @param params {any} params for returing created object
+   * 
+   * @returns Promise<any> Entire object will be returned using params
    */
-  async create(data: any): Promise<any> {
+  async create(data: any, params?:any): Promise<any> {
     this._check_attributes(this.schema.original, data, true);
     const mutation = this._parse_mutation(data, this.schema.name);
-    return this._create(mutation);
+    return this._create(mutation, params);
   }
 
   /**
@@ -520,7 +521,7 @@ class Model {
    * @param mutation {any}
    * @param uid {any} - uid string or { field: value } type search
    *
-   * @returns Promise<any>
+   * @returns Promise<any> - Returns txn messages, not updated data
    */
   private _update(mutation: any, uid: any): Promise<any> {
     return new Promise(async (resolve: Function, reject: Function) => {
@@ -555,7 +556,7 @@ class Model {
    * @param data {any}
    * @param uid {any}
    *
-   * @returns Promise<any>
+   * @returns Promise<any> - Returns txn messages, not updated data
    */
   async update(data: any, uid: any): Promise<any> {
     console.log("dgOrm.model.update: ", data, uid);

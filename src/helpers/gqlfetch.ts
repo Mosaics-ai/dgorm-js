@@ -82,20 +82,20 @@ const getHealth = (endpoint:string, headers:HeadersInit = {} ) => {
     const route = '/admin';
     const body = {
         query: ` 
-            query Health {
-                health {
-                    instance
-                    address
-                    status
-                    group
-                    version
-                    uptime
-                    lastEcho
-                    ongoing
-                    indexing
-                    ee_features
-                }
-            }`
+query Health {
+    health {
+        instance
+        address
+        status
+        group
+        version
+        uptime
+        lastEcho
+        ongoing
+        indexing
+        ee_features
+    }
+}`
         };
     return send(endpoint, body, route, headers);
 }

@@ -141,23 +141,25 @@ declare class Model {
     /**
      * _create
      * @param mutation {any}
+     * @param params {any} params for returing created object
      *
-     * @returns Promise<any>
+     * @returns Promise<any> Entire object will be returned using params
      */
     private _create;
     /**
      * create
      * @param data {any}
+     * @param params {any} params for returing created object
      *
-     * @returns Promise<any>
+     * @returns Promise<any> Entire object will be returned using params
      */
-    create(data: any): Promise<any>;
+    create(data: any, params?: any): Promise<any>;
     /**
      * _update
      * @param mutation {any}
      * @param uid {any} - uid string or { field: value } type search
      *
-     * @returns Promise<any>
+     * @returns Promise<any> - Returns txn messages, not updated data
      */
     private _update;
     /**
@@ -165,7 +167,7 @@ declare class Model {
      * @param data {any}
      * @param uid {any}
      *
-     * @returns Promise<any>
+     * @returns Promise<any> - Returns txn messages, not updated data
      */
     update(data: any, uid: any): Promise<any>;
     /**

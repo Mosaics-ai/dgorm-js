@@ -47,3 +47,10 @@ export declare const pluck: (arr: Array<any>, key: string) => Array<any>;
  * @returns any
  */
 export declare const merge: Function;
+/**
+ * sleep
+ *
+ * @param ms {number} - duration of delay
+ * @returns Promise<unknown>
+ */
+export declare const sleep: (ms: number) => Promise<unknown>;

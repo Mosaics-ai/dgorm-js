@@ -248,3 +248,11 @@ export const merge: Function = (data: any, keys: Array<string>): any => {
 
   return _data;
 }
+
+/**
+ * sleep
+ * 
+ * @param ms {number} - duration of delay
+ * @returns Promise<unknown>
+ */
+export const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
