@@ -222,16 +222,25 @@ class DgraphORM {
         }
     }
 
-    retry = async (fn:Promise<any>, n:number, delay:number = 2000) => {
+    retry = async (
+        fn:Promise<any>,
+        n:number,
+        delay:number = 2000,
+        match?:string[]
+    ) => {
         for (let i = 0; i < n; i++) {
             try {
                 this._log(`...retrying ${i}/${n}`);
                 return await fn;
             } catch(e) {
                 this._log(`failed attempt ${i}`, e);
-                /**
-                 * @dev Possibly add condition check on error
-                 */
+                if(match && match.length > 0) {
+                    const msg = (e && e.message) ? e.message: e;
+                    const found = match.map(m => msg.includes(m));
+                    if(!found) {
+                        throw(e);
+                    }
+                }
             }
 
             if(delay) {
@@ -258,7 +267,8 @@ class DgraphORM {
         background:boolean = false,
         retries:number = 1,
         retryDelay:number = 2000,
-        silent:boolean = true
+        silent:boolean = true,
+        matchErrors?:string[]
     ): Promise<Model> {
         
         const _setModel = this.set_model(schema, background);
@@ -266,7 +276,7 @@ class DgraphORM {
 
         // Predicates
         try {
-            await this.retry(_setModel, retries, retryDelay);
+            await this.retry(_setModel, retries, retryDelay, matchErrors);
         } catch(e) {
             this._error("Max retries - {set_model}", e);
             if(!silent) {
@@ -276,7 +286,7 @@ class DgraphORM {
 
         // Types
         try {
-            await this.retry(_setTypes, retries, retryDelay);
+            await this.retry(_setTypes, retries, retryDelay, matchErrors);
         } catch(e) {
             this._error("Max retries - {set_types}", e);
             if(!silent) {
@@ -372,48 +382,48 @@ class DgraphORM {
         }
     }
 
-  /**
-   * graphql
-   * 
-   * @param schema {Schema}
-   * 
-   * @returns GraphQL
-   */
-  graphql(): GraphQL {
-    const graphqlSchema:string = Object.values(this.graphqls).join('\n');
-    this._log("Generated GraphQL Schema: ", graphqlSchema);
-    return new GraphQL(graphqlSchema, this.models, this.connection, console.log);
-  }
+    /**
+     * graphql
+     * 
+     * @param schema {Schema}
+     * 
+     * @returns GraphQL
+     */
+    graphql(): GraphQL {
+        const graphqlSchema:string = Object.values(this.graphqls).join('\n');
+        this._log("Generated GraphQL Schema: ", graphqlSchema);
+        return new GraphQL(graphqlSchema, this.models, this.connection, console.log);
+    }
   
-  /**
-   * query
-   * 
-   * @param params {QueryParams}
-   * 
-   * @returns Promise<any>
-   */
-  query(params: QueryParams): Promise<any> {
-    return this.connection.client
-      .newTxn()
-      .queryWithVars(
-        params.query,
-        params.variables
-      );
-  }
+    /**
+     * query
+     * 
+     * @param params {QueryParams}
+     * 
+     * @returns Promise<any>
+     */
+    query(params: QueryParams): Promise<any> {
+        return this.connection.client
+            .newTxn()
+            .queryWithVars(
+                params.query,
+                params.variables
+            );
+    }
 
-  /**
-   * mutate
-   * 
-   * @param mutation {string}
-   * 
-   * @returns Promise<any>
-   */
-  mutate(mutation: string): Promise<any> {
-    const mu: Mutation = new this.connection.dgraph.Mutation();
-    mu.setSetJson(mutation);
-    return this.connection.client.newTxn()
-      .mutate(mu);
-  }
+    /**
+     * mutate
+     * 
+     * @param mutation {string}
+     * 
+     * @returns Promise<any>
+     */
+    mutate(mutation: string): Promise<any> {
+        const mu: Mutation = new this.connection.dgraph.Mutation();
+        mu.setSetJson(mutation);
+        return this.connection.client.newTxn()
+        .mutate(mu);
+    }
 }
 
 // Include types

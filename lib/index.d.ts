@@ -151,7 +151,7 @@ declare class DgraphORM {
      * @returns void
      */
     private _set_model;
-    retry: (fn: Promise<any>, n: number, delay?: number) => Promise<any>;
+    retry: (fn: Promise<any>, n: number, delay?: number, match?: string[]) => Promise<any>;
     /**
      * createModel
      *
@@ -163,7 +163,7 @@ declare class DgraphORM {
      *
      * @returns Promise<Model>
      */
-    createModel(schema: Schema, background?: boolean, retries?: number, retryDelay?: number, silent?: boolean): Promise<Model>;
+    createModel(schema: Schema, background?: boolean, retries?: number, retryDelay?: number, silent?: boolean, matchErrors?: string[]): Promise<Model>;
     /**
      * set_model
      *
