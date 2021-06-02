@@ -58,6 +58,21 @@ import { TypesType, SchemaFields, ConnectionConfig, QueryParams } from './types'
 import GraphQL from './graphql';
 import { sleep } from './helpers';
 
+export interface RetryConfig {
+    retries:number
+    retryDelay?:number
+    silent?:boolean
+    matchErrors?:string[]
+    escalate?:boolean
+}
+
+const defaultRetries = {
+    retries: 1,
+    retryDelay: 2000,
+    silent: true,
+    escalate: false
+}
+
 /**
  * DgraphORM
  * 
@@ -226,25 +241,30 @@ class DgraphORM {
         fn:Promise<any>,
         n:number,
         delay:number = 2000,
-        match?:string[]
+        match?:string[],
+        escalate:boolean = false
     ) => {
         for (let i = 0; i < n; i++) {
             try {
                 this._log(`...retrying ${i}/${n}`);
                 return await fn;
             } catch(e) {
-                this._log(`failed attempt ${i}`, e);
+                this._log(`failed attempt ${i}:`);
+                this._log(e);
                 if(match && match.length > 0) {
                     const msg = (e && e.message) ? e.message: e;
+                    this._log("matching against", msg, match);
                     const found = match.map(m => msg.includes(m));
                     if(!found) {
+                        this._log('no error match found, exiting');
                         throw(e);
                     }
                 }
             }
 
             if(delay) {
-                await sleep(delay);
+                const _delay = (escalate) ? delay * (i + 1) : delay;
+                await sleep(_delay);
             }
         }
     
@@ -265,18 +285,22 @@ class DgraphORM {
     async createModel(
         schema: Schema,
         background:boolean = false,
-        retries:number = 1,
-        retryDelay:number = 2000,
-        silent:boolean = true,
-        matchErrors?:string[]
+        retryConfig:RetryConfig = defaultRetries
     ): Promise<Model> {
+        const {
+            retries,
+            retryDelay,
+            matchErrors,
+            silent,
+            escalate
+        } = retryConfig;
         
         const _setModel = this.set_model(schema, background);
         const _setTypes = this.set_types(schema, background);
 
         // Predicates
         try {
-            await this.retry(_setModel, retries, retryDelay, matchErrors);
+            await this.retry(_setModel, retries, retryDelay, matchErrors, escalate);
         } catch(e) {
             this._error("Max retries - {set_model}", e);
             if(!silent) {
@@ -286,7 +310,7 @@ class DgraphORM {
 
         // Types
         try {
-            await this.retry(_setTypes, retries, retryDelay, matchErrors);
+            await this.retry(_setTypes, retries, retryDelay, matchErrors, escalate);
         } catch(e) {
             this._error("Max retries - {set_types}", e);
             if(!silent) {

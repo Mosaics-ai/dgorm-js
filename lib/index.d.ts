@@ -35,6 +35,13 @@ import Connection from './connection';
 import Model from './model';
 import { TypesType, SchemaFields, ConnectionConfig, QueryParams } from './types';
 import GraphQL from './graphql';
+export interface RetryConfig {
+    retries: number;
+    retryDelay?: number;
+    silent?: boolean;
+    matchErrors?: string[];
+    escalate?: boolean;
+}
 /**
  * DgraphORM
  *
@@ -151,7 +158,7 @@ declare class DgraphORM {
      * @returns void
      */
     private _set_model;
-    retry: (fn: Promise<any>, n: number, delay?: number, match?: string[]) => Promise<any>;
+    retry: (fn: Promise<any>, n: number, delay?: number, match?: string[], escalate?: boolean) => Promise<any>;
     /**
      * createModel
      *
@@ -163,7 +170,7 @@ declare class DgraphORM {
      *
      * @returns Promise<Model>
      */
-    createModel(schema: Schema, background?: boolean, retries?: number, retryDelay?: number, silent?: boolean, matchErrors?: string[]): Promise<Model>;
+    createModel(schema: Schema, background?: boolean, retryConfig?: RetryConfig): Promise<Model>;
     /**
      * set_model
      *
