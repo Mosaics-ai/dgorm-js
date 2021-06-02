@@ -498,6 +498,8 @@ class Model {
                 if(_relation) {
                     _mutation[`${name}.${_key}`] = _relation;
                 }
+                console.debug('model._parse_mutation (_relation): ');
+                console.dir(_relation);
             } else {
                 _mutation[`${name}.${_key}`] = mutation[_key];
             }
@@ -523,13 +525,13 @@ class Model {
         if(typeof relation_value === "string") {
             return { uid: relation_value }
         } else if(typeof relation_value === 'object') {
-            return Object.entries(relation_value).map((entry:[string, string]) => {
+            const relation:any = {};
+            Object.entries(relation_value).forEach((entry:[string, string]) => {
                 const k = entry[0];
                 const v = entry[1];
-                return {
-                    [`${relation_name}.${k}`]: v
-                }
+                relation[`${relation_name}.${k}`] = v;
             });
+            return relation;
         } else if(Array.isArray(relation_value)) {
             /**
              * @dev This is done poorly. It should be a recursive function with 
