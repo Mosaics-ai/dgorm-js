@@ -384,75 +384,20 @@ class Model {
     }
 
     /**
-     * _is_relation
-     * @param _key {string}
-     *
-     * @returns boolean
+     * create
+     * @param data {any}
+     * @param params {any} params for returing created object
+     * 
+     * @returns Promise<any> Entire object will be returned using params
      */
-    private _is_relation(_key: string): boolean {
-        const _field = this.schema.original[_key];
-
-        return !!(
-            typeof _field !== 'undefined' 
-            && typeof _field !== 'string' 
-            && _field.type === 'uid'
-        );
-    }
-
-    /**
-     * _parse_mutation_relation
-     * @param mutation {any}
-     * @param name {string}
-     *
-     * @returns {[index: string]: any | Array<[index:string]: any>}
-     */
-    private _parse_mutation_relation(mutation:any, key:string) {
-        /** Is the relation a UID or object? */
-        const _parse_relation = (_relation:any) => 
-        (typeof _relation === "string")
-            ? { uid: _relation }
-            : (typeof _relation === "object") ? _relation : null;
-
-        /** Parse iteratively if array */
-        if(Array.isArray(mutation[key])) {
-            const _m: any = [];
-            mutation[key].forEach((_uid: any ) => {
-                const relation = _parse_relation(_uid);
-                if(relation) {
-                    _m.push(relation)
-                }
-            });
-            return _m;
-        } else {
-            return _parse_relation(mutation[key]);
-        }
-    }
-
-    /**
-     * _parse_mutation
-     * @param mutation {any}
-     * @param name {string}
-     *
-     * @returns {[index: string]: any}
-     */
-    private _parse_mutation(mutation: any, name: string): {[index: string]: any} {
-        let _mutation: {[index: string]: any} = {};
-
-        Object.keys(mutation).forEach(_key => {
-            console.debug("model._parse_mutation [iterating over mutation keys] (_key/name): ", _key, name);
-            if(this._is_relation(_key)) {
-                const _relation = this._parse_mutation_relation(mutation, _key);
-                if(_relation) {
-                    _mutation[`${name}.${_key}`] = _relation;
-                }
-            } else {
-                _mutation[`${name}.${_key}`] = mutation[_key];
-            }
-        });
-
-        // Add dgraph type to mutation
-        _mutation[`dgraph.type`] = name;
-        return _mutation;
+     async create(data: any, params?:any): Promise<any> {
+        this._check_attributes(this.schema.original, data, true);
+        console.debug("model.create [before _parse_mutation] (data)");
+        console.dir(data, { depth: 5 });
+        const mutation = this._parse_mutation(data, this.schema.name);
+        console.debug("model.create [after _parse_mutation] (mutation)");
+        console.dir(mutation, { depth: 5 });
+        return this._create(mutation, params);
     }
 
     /**
@@ -507,19 +452,94 @@ class Model {
     }
 
     /**
-     * create
-     * @param data {any}
-     * @param params {any} params for returing created object
-     * 
-     * @returns Promise<any> Entire object will be returned using params
+     * _is_relation
+     * @param _key {string}
+     *
+     * @returns boolean
      */
-    async create(data: any, params?:any): Promise<any> {
-        this._check_attributes(this.schema.original, data, true);
-        const mutation = this._parse_mutation(data, this.schema.name);
-        console.debug("model.create [after _parse_mutation] (data/mutation)");
-        console.dir(data, { depth: 5 });
-        console.dir(mutation, { depth: 5 });
-        return this._create(mutation, params);
+     private _is_relation(_key: string): boolean {
+        const _field = this.schema.original[_key];
+
+        return !!(
+            typeof _field !== 'undefined' 
+            && typeof _field !== 'string' 
+            && _field.type === 'uid'
+        );
+    }
+
+    /**
+     * _parse_mutation
+     * @param mutation {any} - Data coming in
+     * @param name {string} - Name of Schema Field
+     * @param original {any} - Original schema
+     *
+     * @returns {[index: string]: any}
+     */
+    private _parse_mutation(
+        mutation:any,
+        name:string,
+        original?:any
+    ): {[index: string]: any} {
+        let _mutation: {[index: string]: any} = {};
+
+        Object.keys(mutation).forEach(_key => {
+            console.debug("model._parse_mutation [iterating over mutation keys] (_key/name): ", _key, name);
+            console.debug("model._parse_mutation (is_relation)): ", this._is_relation(_key));
+            if(this._is_relation(_key)) {
+                const relation_name = original[_key].model;
+                const _relation = this._parse_mutation_relation(mutation, _key, relation_name);
+                if(_relation) {
+                    _mutation[`${name}.${_key}`] = _relation;
+                }
+            } else {
+                _mutation[`${name}.${_key}`] = mutation[_key];
+            }
+        });
+
+        // Add dgraph type to mutation
+        _mutation[`dgraph.type`] = name;
+        return _mutation;
+    }
+
+    /**
+     * _parse_mutation_relation
+     * @param mutation {any}
+     * @param name {string}
+     *
+     * @returns {[index: string]: any | Array<[index:string]: any>}
+     */
+    private _parse_mutation_relation(mutation:any, key:string, relation_name:string) {
+        return this._parse_relation_field(mutation[key], relation_name);
+    }
+
+    private _parse_relation_field(relation_value:any, relation_name:string) {
+        if(typeof relation_value === "string") {
+            return { uid: relation_value }
+        } else if(typeof relation_value === 'object') {
+            return Object.entries(relation_value).map((entry:[string, string]) => {
+                const k = entry[0];
+                const v = entry[1];
+                return {
+                    [`${relation_name}.${k}`]: v
+                }
+            });
+        } else if(Array.isArray(relation_value)) {
+            /**
+             * @dev This is done poorly. It should be a recursive function with 
+             * access to the universe of models. Currently, nesting relations 3 deep
+             * will cause an error. Fix ASAP
+             */
+            const _m: any = [];
+            relation_value.forEach((_uid: any ) => {
+                const relation = (typeof _uid === 'string') ? _uid : null;
+                if(relation) {
+                    _m.push(relation)
+                }
+            });
+            return _m;
+        } else {
+            return relation_value
+        }
     }
 
     /**

@@ -116,28 +116,13 @@ declare class Model {
      */
     queryWithVars(params: QueryParams): Promise<any>;
     /**
-     * _is_relation
-     * @param _key {string}
+     * create
+     * @param data {any}
+     * @param params {any} params for returing created object
      *
-     * @returns boolean
+     * @returns Promise<any> Entire object will be returned using params
      */
-    private _is_relation;
-    /**
-     * _parse_mutation_relation
-     * @param mutation {any}
-     * @param name {string}
-     *
-     * @returns {[index: string]: any | Array<[index:string]: any>}
-     */
-    private _parse_mutation_relation;
-    /**
-     * _parse_mutation
-     * @param mutation {any}
-     * @param name {string}
-     *
-     * @returns {[index: string]: any}
-     */
-    private _parse_mutation;
+    create(data: any, params?: any): Promise<any>;
     /**
      * _create
      * @param mutation {any}
@@ -147,13 +132,30 @@ declare class Model {
      */
     private _create;
     /**
-     * create
-     * @param data {any}
-     * @param params {any} params for returing created object
+     * _is_relation
+     * @param _key {string}
      *
-     * @returns Promise<any> Entire object will be returned using params
+     * @returns boolean
      */
-    create(data: any, params?: any): Promise<any>;
+    private _is_relation;
+    /**
+     * _parse_mutation
+     * @param mutation {any} - Data coming in
+     * @param name {string} - Name of Schema Field
+     * @param original {any} - Original schema
+     *
+     * @returns {[index: string]: any}
+     */
+    private _parse_mutation;
+    /**
+     * _parse_mutation_relation
+     * @param mutation {any}
+     * @param name {string}
+     *
+     * @returns {[index: string]: any | Array<[index:string]: any>}
+     */
+    private _parse_mutation_relation;
+    private _parse_relation_field;
     /**
      * _update
      * @param mutation {any}
