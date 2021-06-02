@@ -273,7 +273,7 @@ const defaultRetries = {
 }
 
 export const retry = async (
-    fn:Promise<any>,
+    fn:() => Promise<any>,
     retryConfig: RetryConfig = defaultRetries
 ) => {
     const { retries, delay, match, escalate } = retryConfig;
@@ -281,7 +281,7 @@ export const retry = async (
     for (let i = 0; i < retries; i++) {
         try {
             console.debug(`...retrying ${i}/${retries}`);
-            return await fn;
+            return await fn();
         } catch(e) {
             console.debug(`failed attempt ${i}:`);
             console.debug(e);

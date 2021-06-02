@@ -61,4 +61,4 @@ export interface RetryConfig {
     match?: string[];
     escalate?: boolean;
 }
-export declare const retry: (fn: Promise<any>, retryConfig?: RetryConfig) => Promise<any>;
+export declare const retry: (fn: () => Promise<any>, retryConfig?: RetryConfig) => Promise<any>;
