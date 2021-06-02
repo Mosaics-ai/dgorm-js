@@ -217,8 +217,7 @@ class DgraphORM {
             this.models[schema.name] = schema.original;
 
             // predicates & types & graphql
-            this._generate_schema(schema.schema);
-            this._generate_schema(schema.typeDefs);
+            this._generate_schema([...schema.schema, ...schema.typeDefs || []]);
         }
     }
 
@@ -285,29 +284,6 @@ class DgraphORM {
     }
 
     /**
-     * set_types
-     * 
-     * @param schema {Schema}
-     * 
-     * @returns void
-     */
-    private async set_types(schema: Schema, background:boolean): Promise<void> {
-        // console.log("dgOrm._set_model: ", schema);
-        if(schema.name && typeof this.models[schema.name] === 'undefined') {
-            this.models[schema.name] = schema.original;
-        }
-
-        // types
-        try {
-            await this._generate_schema(schema.typeDefs, background);
-        } catch(e) {
-            this._error('root._set_model._generate_schema (types) error: ', e, schema.typeDefs);
-            throw(e);
-        }
-    }
-
-
-    /**
      * _set_graphql
      * 
      * @param schema {Schema}
@@ -331,7 +307,7 @@ class DgraphORM {
      * @returns void
      */
     async _generate_schema(schema: Array<string>, background: boolean = true): Promise<any> {
-        // console.debug("DGraphORM._generateSchema: ", schema);
+        console.debug("DGraphORM._generateSchema: ", schema);
         if(!schema) { return; }
         const op: Operation  = new this.connection.dgraph.Operation();
 

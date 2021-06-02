@@ -285,7 +285,8 @@ class Model {
 
             try {
                 const rawResponseJson = res.getJson();
-                console.debug(`Model._execute - raw response (${this.schema.name}): `, rawResponseJson);
+                console.debug(`Model._execute - raw response (${this.schema.name}): `);
+                console.dir(rawResponseJson, { depth: 5 });
                 const name = this.schema.name;
                 const response = rawResponseJson[name] ?? rawResponseJson;
                 return resolve(response);
@@ -325,7 +326,9 @@ class Model {
         console.debug("_methods: ");
         console.debug(" Type: ", type);
         console.debug(" Value: ", value);
-        console.debug(" Attributes: ", _params);
+        console.dir(value, { depth: 5 });
+        console.debug(" Attributes: ", );
+        console.dir(_params, { depth: 5 });
         console.debug(" Query: ", query.query);
         console.debug("-------------------------------------------------------")
         console.debug("-------------------------------------------------------")
@@ -436,6 +439,7 @@ class Model {
         let _mutation: {[index: string]: any} = {};
 
         Object.keys(mutation).forEach(_key => {
+            console.debug("model._parse_mutation [iterating over mutation keys] (_key/name): ", _key, name);
             if(this._is_relation(_key)) {
                 const _relation = this._parse_mutation_relation(mutation, _key);
                 if(_relation) {
@@ -463,6 +467,9 @@ class Model {
             const _txn: Txn = this.connection.client.newTxn();
 
             try {
+                console.debug("model._create (mutation/params): ");
+                console.dir(mutation, { depth: 5 });
+                console.dir(params, { depth: 5 });
                 const mu: Mutation = new this.connection.dgraph.Mutation();
                 mu.setSetJson(mutation);
 
@@ -477,7 +484,8 @@ class Model {
 
                 const _mutation: any  = await _txn.mutate(mu);
 
-                console.debug("dgOrm.model._create (_mutation): ", _mutation);
+                console.debug("dgOrm.model._create (_mutation): ");
+                console.dir(_mutation, { depth: 5 });
                 console.debug("Create UIDs map: ");
                 console.debug( _mutation.getUidsMap());
                 const _uid = _mutation.getUidsMap().values().next().value;
@@ -485,6 +493,8 @@ class Model {
                 console.debug(`Returned uid: ${_uid}`);
                 const data: any = await this._method('uid', _uid, params);
 
+                console.debug("model._create (data): ");
+                console.dir(data, { depth: 5 });
                 return resolve(data[0]);
             } catch (error) {
                 console.error("Error - dgOrm.model._create: ", error);
@@ -506,6 +516,9 @@ class Model {
     async create(data: any, params?:any): Promise<any> {
         this._check_attributes(this.schema.original, data, true);
         const mutation = this._parse_mutation(data, this.schema.name);
+        console.debug("model.create [after _parse_mutation] (data/mutation)");
+        console.dir(data, { depth: 5 });
+        console.dir(mutation, { depth: 5 });
         return this._create(mutation, params);
     }
 
@@ -524,7 +537,8 @@ class Model {
             const mu: Mutation = new this.connection.dgraph.Mutation();
             mutation.uid = uid;
 
-            console.debug("dgOrm.model._update (mutation): ", mutation);
+            console.debug("dgOrm.model._update (mutation): ");
+            console.dir(mutation);
 
             mu.setCommitNow(true);
             mu.setSetJson(mutation);
@@ -556,6 +570,9 @@ class Model {
         const _keys: Array<string> = Object.keys(data);
 
         if(_keys.length === 0) { return;}
+
+        console.debug("dgOrm.model.update (data): ");
+        console.dir(data);
 
         this._check_attributes(this.schema.original, data, true);
         const mutation = this._parse_mutation(data, this.schema.name);

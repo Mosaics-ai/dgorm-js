@@ -173,14 +173,6 @@ declare class DgraphORM {
      */
     private set_model;
     /**
-     * set_types
-     *
-     * @param schema {Schema}
-     *
-     * @returns void
-     */
-    private set_types;
-    /**
      * _set_graphql
      *
      * @param schema {Schema}
