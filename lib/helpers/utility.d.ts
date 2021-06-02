@@ -54,3 +54,11 @@ export declare const merge: Function;
  * @returns Promise<unknown>
  */
 export declare const sleep: (ms: number) => Promise<unknown>;
+export interface RetryConfig {
+    retries: number;
+    delay?: number;
+    silent?: boolean;
+    match?: string[];
+    escalate?: boolean;
+}
+export declare const retry: (fn: Promise<any>, retryConfig?: RetryConfig) => Promise<any>;

@@ -56,22 +56,7 @@ import Model from './model';
 
 import { TypesType, SchemaFields, ConnectionConfig, QueryParams } from './types';
 import GraphQL from './graphql';
-import { sleep } from './helpers';
-
-export interface RetryConfig {
-    retries:number
-    retryDelay?:number
-    silent?:boolean
-    matchErrors?:string[]
-    escalate?:boolean
-}
-
-const defaultRetries = {
-    retries: 1,
-    retryDelay: 2000,
-    silent: true,
-    escalate: false
-}
+import { retry, RetryConfig, sleep } from './helpers';
 
 /**
  * DgraphORM
@@ -237,40 +222,6 @@ class DgraphORM {
         }
     }
 
-    retry = async (
-        fn:Promise<any>,
-        n:number,
-        delay:number = 2000,
-        match?:string[],
-        escalate:boolean = false
-    ) => {
-        for (let i = 0; i < n; i++) {
-            try {
-                this._log(`...retrying ${i}/${n}`);
-                return await fn;
-            } catch(e) {
-                this._log(`failed attempt ${i}:`);
-                this._log(e);
-                if(match && match.length > 0) {
-                    const msg = (e && e.message) ? e.message: e;
-                    this._log("matching against", msg, match);
-                    const found = match.map(m => msg.includes(m));
-                    if(!found) {
-                        this._log('no error match found, exiting');
-                        throw(e);
-                    }
-                }
-            }
-
-            if(delay) {
-                const _delay = (escalate) ? delay * (i + 1) : delay;
-                await sleep(_delay);
-            }
-        }
-    
-        throw new Error(`Failed retrying ${n} times`);
-    }
-
     /**
      * createModel
      * 
@@ -285,22 +236,17 @@ class DgraphORM {
     async createModel(
         schema: Schema,
         background:boolean = false,
-        retryConfig:RetryConfig = defaultRetries
+        retryConfig:RetryConfig
     ): Promise<Model> {
-        const {
-            retries,
-            retryDelay,
-            matchErrors,
-            silent,
-            escalate
-        } = retryConfig;
+        const { silent } = retryConfig;
         
-        const _setModel = this.set_model(schema, background);
-        const _setTypes = this.set_types(schema, background);
+        const _setModel = this.set_model.bind(this, schema, background);
+        const _setTypes = this.set_types.bind(this, schema, background);
 
         // Predicates
         try {
-            await this.retry(_setModel, retries, retryDelay, matchErrors, escalate);
+            const response = await retry(_setModel, retryConfig);
+            this._log('_setModel response: ', response);
         } catch(e) {
             this._error("Max retries - {set_model}", e);
             if(!silent) {
@@ -308,12 +254,26 @@ class DgraphORM {
             }
         }
 
+        // Give the database time
+        await sleep(1000);
+
         // Types
         try {
-            await this.retry(_setTypes, retries, retryDelay, matchErrors, escalate);
+            const response = await retry(_setTypes, retryConfig);
+            this._log('_setModel response: ', response);
         } catch(e) {
             this._error("Max retries - {set_types}", e);
-            if(!silent) {
+            const msg = (e && e.message) ? e.message : e;
+
+            // Needs more time --- hack
+            if(e.includes('Schema does not contain a matching predicate for field')) {
+                // Predicates
+                try {
+                    await retry(_setModel, retryConfig);
+                    await sleep(1000);
+                    await retry(_setTypes, retryConfig);
+                } catch {}
+            } else if(!silent) {
                 throw(e);
             }
         }
@@ -329,7 +289,7 @@ class DgraphORM {
      * 
      * @returns void
      */
-    private async set_model(schema: Schema, background:boolean = true): Promise<void> {
+    private async set_model(schema: Schema, background:boolean): Promise<void> {
         // console.log("dgOrm._set_model: ", schema);
         if(schema.name && typeof this.models[schema.name] === 'undefined') {
             this.models[schema.name] = schema.original;
@@ -337,7 +297,7 @@ class DgraphORM {
     
         // predicates
         try {
-            await this._generate_schema(schema.schema, background);
+            return await this._generate_schema(schema.schema, background);
         } catch(e) {
             this._error('root.set_model._generate_schema error: ', e, schema.schema);
             throw(e);
@@ -351,7 +311,7 @@ class DgraphORM {
      * 
      * @returns void
      */
-    private async set_types(schema: Schema, background:boolean = true): Promise<void> {
+    private async set_types(schema: Schema, background:boolean): Promise<void> {
         // console.log("dgOrm._set_model: ", schema);
         if(schema.name && typeof this.models[schema.name] === 'undefined') {
             this.models[schema.name] = schema.original;
@@ -399,9 +359,8 @@ class DgraphORM {
         op.setSchema(schema.join("\n"));
         
         try {
-            await this.connection.client.alter(op);
+            return await this.connection.client.alter(op);
         } catch(e) {
-            this._error('root._generate_schema', e);
             throw(e);
         }
     }

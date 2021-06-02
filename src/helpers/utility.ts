@@ -256,3 +256,51 @@ export const merge: Function = (data: any, keys: Array<string>): any => {
  * @returns Promise<unknown>
  */
 export const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export interface RetryConfig {
+    retries:number
+    delay?:number
+    silent?:boolean
+    match?:string[]
+    escalate?:boolean
+}
+
+const defaultRetries = {
+    retries: 1,
+    delay: 2000,
+    silent: true,
+    escalate: false
+}
+
+export const retry = async (
+    fn:Promise<any>,
+    retryConfig: RetryConfig = defaultRetries
+) => {
+    const { retries, delay, match, escalate } = retryConfig;
+
+    for (let i = 0; i < retries; i++) {
+        try {
+            console.debug(`...retrying ${i}/${retries}`);
+            return await fn;
+        } catch(e) {
+            console.debug(`failed attempt ${i}:`);
+            console.debug(e);
+            if(match && match.length > 0) {
+                const msg = (e && e.message) ? e.message: e;
+                console.error("matching against", msg, match);
+                const found = match.map(m => msg.includes(m));
+                if(!found) {
+                    console.error('no error match found, exiting');
+                    throw(e);
+                }
+            }
+        }
+
+        if(delay) {
+            const _delay = (escalate) ? delay * (i + 1) : delay;
+            await sleep(_delay);
+        }
+    }
+
+    throw new Error(`Failed retrying ${retries} times`);
+}
