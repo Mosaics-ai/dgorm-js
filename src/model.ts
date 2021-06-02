@@ -394,9 +394,13 @@ class Model {
         this._check_attributes(this.schema.original, data, true);
         console.debug("model.create [before _parse_mutation] (data)");
         console.dir(data, { depth: 5 });
+        console.debug('----------------------------------------------');
         const mutation = this._parse_mutation(data, this.schema.name, this.schema.original);
+        console.debug('----------------------------------------------');
         console.debug("model.create [after _parse_mutation] (mutation)");
         console.dir(mutation, { depth: 5 });
+        console.debug('----------------------------------------------');
+        console.debug('model._create call:');
         return this._create(mutation, params);
     }
 
@@ -486,7 +490,10 @@ class Model {
             console.debug("model._parse_mutation [iterating over mutation keys] (_key/name): ", _key, name);
             console.debug("model._parse_mutation (is_relation)): ", this._is_relation(_key));
             if(this._is_relation(_key)) {
-                const relation_name = original[name].model;
+                const schema_def = original[_key];
+                console.debug("schema_def (original[_key])");
+                console.dir(schema_def);
+                const relation_name = original[_key].model;
                 const _relation = this._parse_mutation_relation(mutation, _key, relation_name);
                 if(_relation) {
                     _mutation[`${name}.${_key}`] = _relation;
