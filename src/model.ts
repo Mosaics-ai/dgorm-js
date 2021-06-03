@@ -486,22 +486,29 @@ class Model {
     ): {[index: string]: any} {
         let _mutation: {[index: string]: any} = {};
 
+        console.debug("_parse_mutation (mutation): ", mutation);
         Object.keys(mutation).forEach(_key => {
+            const fieldKey = `${name}.${_key}`;
+
             console.debug("model._parse_mutation [iterating over mutation keys] (_key/name): ", _key, name);
             console.debug("model._parse_mutation (is_relation)): ", this._is_relation(_key));
+            
             if(this._is_relation(_key)) {
+                // Relation type
                 const schema_def = original[_key];
                 console.debug("schema_def (original[_key])");
                 console.dir(schema_def);
                 const relation_name = original[_key].model;
                 const _relation = this._parse_mutation_relation(mutation, _key, relation_name);
+                console.debug("_relation (after parse)");
+                console.dir(_relation);
                 if(_relation) {
-                    _mutation[`${name}.${_key}`] = _relation;
+                    _mutation[fieldKey] = _relation;
                 }
                 console.debug('model._parse_mutation (_relation): ');
                 console.dir(_relation);
             } else {
-                _mutation[`${name}.${_key}`] = mutation[_key];
+                _mutation[fieldKey] = mutation[_key];
             }
         });
 
@@ -518,20 +525,10 @@ class Model {
      * @returns {[index: string]: any | Array<[index:string]: any>}
      */
     private _parse_mutation_relation(mutation:any, key:string, relation_name:string) {
-        return this._parse_relation_field(mutation[key], relation_name);
-    }
-
-    private _parse_relation_field(relation_value:any, relation_name:string) {
+        const relation_value = mutation[key];
+        console.debug("_parse_mutation_relation (relation_value): ", relation_value);
         if(typeof relation_value === "string") {
             return { uid: relation_value }
-        } else if(typeof relation_value === 'object') {
-            const relation:any = {};
-            Object.entries(relation_value).forEach((entry:[string, string]) => {
-                const k = entry[0];
-                const v = entry[1];
-                relation[`${relation_name}.${k}`] = v;
-            });
-            return relation;
         } else if(Array.isArray(relation_value)) {
             /**
              * @dev This is done poorly. It should be a recursive function with 
@@ -539,16 +536,32 @@ class Model {
              * will cause an error. Fix ASAP
              */
             const _m: any = [];
-            relation_value.forEach((_uid: any ) => {
-                const relation = (typeof _uid === 'string') ? _uid : null;
-                if(relation) {
-                    _m.push(relation)
-                }
+            relation_value.forEach((uid: any ) => {
+                _m.push(
+                    (typeof uid === 'string') 
+                    ? { uid } : this._parse_mutation_relation_objs(uid, relation_name)
+                );
             });
             return _m;
+        } else if(typeof relation_value === 'object') {
+            return this._parse_mutation_relation_objs(
+                relation_value,
+                relation_name
+            );
         } else {
             return relation_value
         }
+    }
+
+    private _parse_mutation_relation_objs(obj:any, relation_name:string) {
+        const relation:any = {};
+        Object.entries(obj).forEach((entry:[string, string]) => {
+            const k = entry[0];
+            const v = entry[1];
+            const fieldKey = (k === 'uid') ? 'uid' : `${relation_name}.${k}`;
+            relation[fieldKey] = v;
+        });
+        return relation;
     }
 
     /**

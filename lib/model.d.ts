@@ -155,7 +155,7 @@ declare class Model {
      * @returns {[index: string]: any | Array<[index:string]: any>}
      */
     private _parse_mutation_relation;
-    private _parse_relation_field;
+    private _parse_mutation_relation_objs;
     /**
      * _update
      * @param mutation {any}
