@@ -838,7 +838,7 @@ class Model {
         const _lang_fields: Array<string> = this._lang_fields(original);
 
         for(let attribute of attributes) {
-            if(attribute.indexOf('@') === -1 && typeof original[attribute] === 'undefined') {
+            if(attribute.indexOf('@') === -1 && typeof original[attribute] === 'undefined' && attribute !== 'uid') {
                 throw new Error(`${this.schema.name} has no attribute ${attribute}`);
             }else if(attribute.indexOf('@') !== -1 && _lang_fields.indexOf(attribute.split('@')[0]) === -1) {
                 throw new Error(`${this.schema.name} has no lang property in ${attribute}`);
