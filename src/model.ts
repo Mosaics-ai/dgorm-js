@@ -894,6 +894,9 @@ class Model {
      */
     private _validate(original:any , params: Params = {}): Params {
         if(!params) { params = {}; }
+        console.debug('model._validate (args)', original, params)
+        console.dir(original);
+        console.dir(params);
 
         if(!params.attributes || params.attributes.length === 0) {
             params.attributes = this._all_attributes(original);
@@ -905,6 +908,8 @@ class Model {
             params.attributes.splice(_index, 1);
         }
 
+        console.debug('model._validate (before check)', params);
+        console.dir(params);
         this._check_attributes(original, params.attributes);
 
         params.attributes.unshift('uid');
