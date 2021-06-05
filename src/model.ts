@@ -573,28 +573,28 @@ class Model {
      */
     private _update(mutation: any, uid: any): Promise<any> {
         return new Promise(async (resolve: Function, reject: Function) => {
-        const _txn: Txn = this.connection.client.newTxn();
+            const _txn: Txn = this.connection.client.newTxn();
 
-        try {
-            const mu: Mutation = new this.connection.dgraph.Mutation();
-            mutation.uid = uid;
+            try {
+                const mu: Mutation = new this.connection.dgraph.Mutation();
+                mutation.uid = uid;
 
-            console.debug("dgOrm.model._update (mutation): ");
-            console.dir(mutation);
+                console.debug("dgOrm.model._update (mutation): ");
+                console.dir(mutation);
 
-            mu.setCommitNow(true);
-            mu.setSetJson(mutation);
+                mu.setCommitNow(true);
+                mu.setSetJson(mutation);
 
-            const response = await _txn.mutate(mu);
-            // console.debug("model._update (response): ", response);
-            return resolve(response);
-        } catch (error) {
-            console.error("Error: dgOrm.model._update: ", error);
-            await _txn.discard();
-            return reject(error);
-        } finally {
-            await _txn.discard();
-        }
+                const response = await _txn.mutate(mu);
+                // console.debug("model._update (response): ", response);
+                return resolve(response);
+            } catch (error) {
+                console.error("Error: dgOrm.model._update: ", error);
+                await _txn.discard();
+                return reject(error);
+            } finally {
+                await _txn.discard();
+            }
         });
     }
 
@@ -640,21 +640,28 @@ class Model {
         }
 
         if(typeof uid === 'object') {
+            // Format the 'uid' object as a filter
             const _key: string = Object.keys(uid)[0];
-            const data: any = await this._method('has', _key, {
-                filter: uid
-            });
+            let filter:any = (_key === 'filter') ? uid['filter'] : { ...uid };
+            // Use the first key. 
+            // @note: Not the best way to do this.
+            let hasKey:string = Object.keys(filter)[0];
+            // get the data using the filter
+            const _data: any = await this._method('has', hasKey, { filter });
 
             console.log("dgOrm.model.update (pre-update) (uid=object): ", data);
 
-            if(data && data.length > 0) {
+            if(_data && _data.length > 0) {
+                // get array of uids
                 const _uids: Array<string> = pluck(data, 'uid');
                 console.debug(`Updating uids ${_uids} `);
-                // Gather promises
-                let values = await Promise.all(
-                    _uids.map(_uid => this._update(mutation, _uid))
-                );
-                return values;
+                // Update each object
+                let responses:any[] = [];
+                for(let _uid in _uids) {
+                    const response = await this._update(mutation, _uid);
+                    responses.push(response);
+                }
+                return responses;
             }
         }
     }
