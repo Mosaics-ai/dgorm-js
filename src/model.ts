@@ -400,15 +400,15 @@ class Model {
      * @returns Promise<any> Entire object will be returned using params
      */
      async create_batch(data: any[], params?:any): Promise<any> {
-        let mutations = [];
+        let mutations:any[] = [];
         if(!Array.isArray(data)) {
             return this.create(data, params);
         } else {
-            for(const datum in data) {
+            data.forEach(datum => {
                 this._check_attributes(this.schema.original, datum, true);
                 const mutation = this._parse_mutation(datum, this.schema.name, this.schema.original);
                 mutations.push(mutation);
-            }
+            });
             console.debug('----------------------------------------------');
             console.debug("model.create_batch [after _parse_mutation] (mutations)");
             console.dir(mutations, { depth: 5 });
