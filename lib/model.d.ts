@@ -124,6 +124,14 @@ declare class Model {
      */
     create(data: any, params?: any): Promise<any>;
     /**
+     * create_batch
+     * @param data {any}
+     * @param params {any} params for returing created object
+     *
+     * @returns Promise<any> Entire object will be returned using params
+     */
+    create_batch(data: any[], params?: any): Promise<any>;
+    /**
      * _create
      * @param mutation {any}
      * @param params {any} params for returing created object

@@ -393,6 +393,32 @@ class Model {
     }
 
     /**
+     * create_batch
+     * @param data {any}
+     * @param params {any} params for returing created object
+     * 
+     * @returns Promise<any> Entire object will be returned using params
+     */
+     async create_batch(data: any[], params?:any): Promise<any> {
+        let mutations = [];
+        if(!Array.isArray(data)) {
+            return this.create(data, params);
+        } else {
+            for(const datum in data) {
+                this._check_attributes(this.schema.original, datum, true);
+                const mutation = this._parse_mutation(datum, this.schema.name, this.schema.original);
+                mutations.push(mutation);
+            }
+            console.debug('----------------------------------------------');
+            console.debug("model.create_batch [after _parse_mutation] (mutations)");
+            console.dir(mutations, { depth: 5 });
+            console.debug('----------------------------------------------');
+            console.debug('model.create_batch call:');
+            return this._create(mutations, params);
+        }
+    }
+
+    /**
      * _create
      * @param mutation {any}
      * @param params {any} params for returing created object
@@ -417,9 +443,16 @@ class Model {
                 mu.setCommitNow(true);
 
                 const _mutation: any  = await _txn.mutate(mu);
-                const _uid = _mutation.getUidsMap().values().next().value;
-                const data: any = await this._method('uid', _uid, params);
-                return resolve(data[0]);
+                const _uids = _mutation.getUidsMap().values();
+                if(Array.isArray(mutation)) {
+                    console.dir(_uids);
+                    // const data:any = await this._method('uid', _uids);
+                    return resolve(true);
+                } else {
+                    const _uid = _uids.next().value;
+                    const data: any = await this._method('uid', _uid, params);
+                    return resolve(data[0]);
+                }
             } catch (error) {
                 console.error("Error - dgOrm.model._create: ", error);
                 await _txn.discard();
