@@ -443,13 +443,18 @@ class Model {
                 mu.setCommitNow(true);
 
                 const _mutation: any  = await _txn.mutate(mu);
-                const _uids = _mutation.getUidsMap().values();
+                const _uids = _mutation.getUidsMap();
                 if(Array.isArray(mutation)) {
                     console.dir(_uids);
-                    // const data:any = await this._method('uid', _uids);
-                    return resolve(true);
+                    const uids:string[] = [];
+                    _uids.forEach((uid:string, key:string) => {
+                        uids.push(uid);
+                    });
+
+                    const data:any = await this._method('uid', uids);
+                    return resolve(data);
                 } else {
-                    const _uid = _uids.next().value;
+                    const _uid = _uids.values().next().value;
                     const data: any = await this._method('uid', _uid, params);
                     return resolve(data[0]);
                 }
