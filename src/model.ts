@@ -489,7 +489,7 @@ class Model {
     private _parse_mutation_relation(mutation:any, key:string, relation_name:string) {
         const relation_value = mutation[key];
         if(typeof relation_value === "string") {
-            return { uid: relation_value }
+            return { uid: relation_value, ['dgraph.type']: relation_name }
         } else if(Array.isArray(relation_value)) {
             /**
              * @dev This is done poorly. It should be a recursive function with 
@@ -522,6 +522,7 @@ class Model {
             const fieldKey = (k === 'uid') ? 'uid' : `${relation_name}.${k}`;
             relation[fieldKey] = v;
         });
+        relation[`dgraph.type`] = relation_name;
         return relation;
     }
 
