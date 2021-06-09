@@ -499,7 +499,7 @@ class Model {
     ): {[index: string]: any} {
         let _mutation: {[index: string]: any} = {};
         Object.keys(mutation).forEach(_key => {
-            const fieldKey = `${name}.${_key}`;
+            const fieldKey = (_key === 'uid') ? _key : `${name}.${_key}`;
             if(this._is_relation(_key)) {
                 // Relation type
                 const relation_name = original[_key].model;
