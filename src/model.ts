@@ -513,7 +513,7 @@ class Model {
         });
 
         // Add dgraph type to mutation
-        // _mutation[`dgraph.type`] = name;
+        _mutation[`dgraph.type`] = name;
         return _mutation;
     }
 
@@ -560,7 +560,7 @@ class Model {
             const fieldKey = (k === 'uid') ? 'uid' : `${relation_name}.${k}`;
             relation[fieldKey] = v;
         });
-        // relation[`dgraph.type`] = relation_name;
+        relation[`dgraph.type`] = relation_name;
         return relation;
     }
 
