@@ -443,32 +443,13 @@ class Model {
                 mu.setCommitNow(true);
 
                 const _mutation: any  = await _txn.mutate(mu);
-                console.debug("-- understanding mutations results: ");
-                console.debug( typeof _mutation);
-                console.dir(_mutation);
-                console.debug("^^^^^^^^^^^^^^^^^^")
-                console.debug( typeof _mutation.getUidsMap());
-                console.dir(_mutation.getUidsMap());
-                console.debug("^^^^^^^^^^^^^^^^^^")
-                console.debug( typeof _mutation.getUidsMap().entries());
-                console.dir(_mutation.getUidsMap().entries())
-                console.debug("^^^^^^^^^^^^^^^^^^")
-                console.debug( typeof _mutation.getUidsMap().keys());
-                console.dir(_mutation.getUidsMap().keys())
-                console.debug("^^^^^^^^^^^^^^^^^^")
-                console.debug( typeof _mutation.getUidsMap().values());
-                console.dir(_mutation.getUidsMap().values())
-                console.debug("^^^^^^^^^^^^^^^^^^")
                 const _uids = _mutation.getUidsMap();
                 if(Array.isArray(mutation)) {
                     const uids:string[] = [];
                     _uids.forEach((uid:string, key:string) => {
                         uids.push(uid);
                     });
-                    
                     console.dir(uids);
-                    console.debug("^^^^^^^^^^^^^^^^^^")
-
                     const data:any = await this._method('uid', uids, params);
                     console.debug("create_batch returned: ", data);
                     return resolve(data);
@@ -546,7 +527,7 @@ class Model {
     private _parse_mutation_relation(mutation:any, key:string, relation_name:string) {
         const relation_value = mutation[key];
         if(typeof relation_value === "string") {
-            return { uid: relation_value, ['dgraph.type']: relation_name }
+            return { uid: relation_value }
         } else if(Array.isArray(relation_value)) {
             /**
              * @dev This is done poorly. It should be a recursive function with 
