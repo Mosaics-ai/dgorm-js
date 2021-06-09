@@ -446,12 +446,14 @@ class Model {
                 const _uids = _mutation.getUidsMap();
                 if(Array.isArray(mutation)) {
                     console.dir(_uids);
+                    console.dir(_uids.values());
                     const uids:string[] = [];
-                    _uids.forEach((uid:string, key:string) => {
+                    _uids.values().forEach((uid:string, key:string) => {
                         uids.push(uid);
                     });
 
-                    const data:any = await this._method('uid', uids);
+                    const data:any = await this._method('uid', uids, params);
+                    console.debug("create_batch returned: ", data);
                     return resolve(data);
                 } else {
                     const _uid = _uids.values().next().value;
