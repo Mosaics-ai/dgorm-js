@@ -265,7 +265,6 @@ class Model {
     private _execute(query: string): Promise<any> {
         return new Promise(async (resolve: Function, reject: Function) => {
             const _txn: Txn = this.connection.client.newTxn();
-            console.debug(`Model._execute: `, query);
 
             let res;
 
@@ -359,8 +358,6 @@ class Model {
 
             try {
                 const data = await _txn.queryWithVars(params.query, params.variables);
-                //await _txn.commit();
-
                 return resolve(data.getJson());
             } catch (error) {
                 await _txn.discard();
@@ -380,15 +377,7 @@ class Model {
      */
      async create(data: any, params?:any): Promise<any> {
         this._check_attributes(this.schema.original, data, true);
-        console.debug("model.create [before _parse_mutation] (data)");
-        console.dir(data, { depth: 5 });
-        console.debug('----------------------------------------------');
         const mutation = this._parse_mutation(data, this.schema.name, this.schema.original);
-        console.debug('----------------------------------------------');
-        console.debug("model.create [after _parse_mutation] (mutation)");
-        console.dir(mutation, { depth: 5 });
-        console.debug('----------------------------------------------');
-        console.debug('model._create call:');
         return this._create(mutation, params);
     }
 
@@ -409,11 +398,6 @@ class Model {
                 const mutation = this._parse_mutation(datum, this.schema.name, this.schema.original);
                 mutations.push(mutation);
             });
-            console.debug('----------------------------------------------');
-            console.debug("model.create_batch [after _parse_mutation] (mutations)");
-            console.dir(mutations, { depth: 5 });
-            console.debug('----------------------------------------------');
-            console.debug('model.create_batch call:');
             return this._create(mutations, params);
         }
     }
@@ -449,9 +433,7 @@ class Model {
                     _uids.forEach((uid:string, key:string) => {
                         uids.push(uid);
                     });
-                    console.dir(uids);
                     const data:any = await this._method('uid', uids, params);
-                    console.debug("create_batch returned: ", data);
                     return resolve(data);
                 } else {
                     const _uid = _uids.values().next().value;
