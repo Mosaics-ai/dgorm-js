@@ -513,7 +513,7 @@ class Model {
         });
 
         // Add dgraph type to mutation
-        _mutation[`dgraph.type`] = name;
+        // _mutation[`dgraph.type`] = name;
         return _mutation;
     }
 
