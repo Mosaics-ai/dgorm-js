@@ -553,7 +553,7 @@ class Model {
      *
      * @returns Promise<any> - Returns txn messages, not updated data
      */
-    private _update(mutation: any, uid: any): Promise<any> {
+    private _update(mutation: any, uid: string): Promise<any> {
         return new Promise(async (resolve: Function, reject: Function) => {
             const _txn: Txn = this.connection.client.newTxn();
 
@@ -566,7 +566,14 @@ class Model {
 
                 const response = await _txn.mutate(mu);
                 console.debug("model._update (response): ", response);
-                return resolve(response);
+
+                const _uids = response.getUidsMap();
+                const uids:string[] = [];
+                _uids.forEach((id:string, key:string) => {
+                    uids.push(id);
+                });
+
+                return resolve(uids);
             } catch (error) {
                 console.error("Error: dgOrm.model._update: ", error);
                 await _txn.discard();
@@ -615,7 +622,7 @@ class Model {
         }
 
         if(typeof uid === 'string') {
-            return await this._update(mutation, { uid });
+            return await this._update(mutation, uid);
         }
 
         if(typeof uid === 'object') {
@@ -640,9 +647,7 @@ class Model {
                 // Update each object
                 let responses:any[] = [];
                 for(const _uid in _uids) {
-                    const response = await this._update(mutation, {
-                        uid: _uid
-                    });
+                    const response = await this._update(mutation, uid);
                     responses.push(response);
                 }
                 return responses;
