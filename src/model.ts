@@ -560,12 +560,12 @@ class Model {
             try {
                 const mu: Mutation = new this.connection.dgraph.Mutation();
                 mutation.uid = uid;
+                console.debug('model._update mutation ready: ', mutation);
 
                 mu.setCommitNow(true);
                 mu.setSetJson(mutation);
 
                 const response = await _txn.mutate(mu);
-                console.debug("model._update (response): ", response);
 
                 const _uids = response.getUidsMap();
                 const uids:string[] = [];
