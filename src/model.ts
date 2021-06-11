@@ -565,7 +565,7 @@ class Model {
                 mu.setSetJson(mutation);
 
                 const response = await _txn.mutate(mu);
-                // console.debug("model._update (response): ", response);
+                console.debug("model._update (response): ", response);
                 return resolve(response);
             } catch (error) {
                 console.error("Error: dgOrm.model._update: ", error);
@@ -626,14 +626,16 @@ class Model {
             // @note: Not the best way to do this.
             let hasKey:string = Object.keys(filter)[0];
             // get the data using the filter
-            const _data: any = await this._method('has', hasKey, { filter });
+            const found: any = await this._method('has', hasKey, { filter });
+            console.log("dgOrm.model.update (pre-update) (uid=object) (data/found): ",
+                data,
+                found
+            );
 
-            console.log("dgOrm.model.update (pre-update) (uid=object): ", data);
-
-            if(_data && _data.length > 0) {
+            if(found && found.length > 0) {
                 // get array of uids
-                const _uids: Array<string> = pluck(data, 'uid');
-                console.debug(`Updating uids ${_uids} `);
+                const _uids: Array<string> = pluck(found, 'uid');
+                console.debug(`Updating uids: `, _uids);
                 // Update each object
                 let responses:any[] = [];
                 for(let _uid in _uids) {
