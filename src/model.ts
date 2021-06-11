@@ -634,7 +634,9 @@ class Model {
             let hasKey:string = Object.keys(filter)[0];
             // get the data using the filter
             const found: any = await this._method('has', hasKey, { filter });
-            console.log("dgOrm.model.update (pre-update) (uid=object) (data/mutation/found): ",
+            console.log(
+                "dgOrm.model.update (pre-update) " +
+                "(uid=object) (data/mutation/found): ",
                 data,
                 mutation,
                 found
@@ -647,7 +649,7 @@ class Model {
                 // Update each object
                 let responses:any[] = [];
                 for(const _uid in _uids) {
-                    const response = await this._update(mutation, uid);
+                    const response = await this._update(mutation, _uid);
                     responses.push(response);
                 }
                 return responses;
