@@ -648,7 +648,8 @@ class Model {
                 console.debug(`Updating uids: `, _uids);
                 // Update each object
                 let responses:any[] = [];
-                for(const _uid in _uids) {
+                for(const _key in _uids) {
+                    const _uid = _uids[_key];
                     const response = await this._update(mutation, _uid);
                     responses.push(response);
                 }
