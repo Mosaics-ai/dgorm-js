@@ -615,7 +615,7 @@ class Model {
         }
 
         if(typeof uid === 'string') {
-            return await this._update(mutation, uid);
+            return await this._update(mutation, { uid });
         }
 
         if(typeof uid === 'object') {
@@ -627,8 +627,9 @@ class Model {
             let hasKey:string = Object.keys(filter)[0];
             // get the data using the filter
             const found: any = await this._method('has', hasKey, { filter });
-            console.log("dgOrm.model.update (pre-update) (uid=object) (data/found): ",
+            console.log("dgOrm.model.update (pre-update) (uid=object) (data/mutation/found): ",
                 data,
+                mutation,
                 found
             );
 
@@ -638,8 +639,10 @@ class Model {
                 console.debug(`Updating uids: `, _uids);
                 // Update each object
                 let responses:any[] = [];
-                for(let _uid in _uids) {
-                    const response = await this._update(mutation, _uid);
+                for(const _uid in _uids) {
+                    const response = await this._update(mutation, {
+                        uid: _uid
+                    });
                     responses.push(response);
                 }
                 return responses;
