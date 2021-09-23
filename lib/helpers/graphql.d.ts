@@ -8,4 +8,3 @@
 import { GqlMapType } from "../types";
 declare const Types: GqlMapType;
 export default Types;
-//# sourceMappingURL=graphql.d.ts.map

@@ -9,4 +9,3 @@ declare const tokenmap: {
     [index: string]: Array<string>;
 };
 export default tokenmap;
-//# sourceMappingURL=tokenmap.d.ts.map

@@ -90,4 +90,3 @@ declare class Schema {
     private _generate_graphql;
 }
 export default Schema;
-//# sourceMappingURL=schema.d.ts.map

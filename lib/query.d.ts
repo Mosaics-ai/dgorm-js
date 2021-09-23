@@ -135,4 +135,3 @@ declare class Query {
     private _build;
 }
 export default Query;
-//# sourceMappingURL=query.d.ts.map

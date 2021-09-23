@@ -243,4 +243,3 @@ declare class Model {
     private _validate;
 }
 export default Model;
-//# sourceMappingURL=model.d.ts.map

@@ -65,4 +65,3 @@ declare class GraphQL {
     get graphql(): string;
 }
 export default GraphQL;
-//# sourceMappingURL=graphql.d.ts.map

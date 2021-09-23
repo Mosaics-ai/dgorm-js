@@ -368,4 +368,4 @@ class DgraphORM {
 // Include types
 export { Types as dgTypes }
 export * from './types';
-export default new DgraphORM();
+export default DgraphORM;

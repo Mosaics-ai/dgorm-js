@@ -62,4 +62,3 @@ export interface RetryConfig {
     escalate?: boolean;
 }
 export declare const retry: (fn: () => Promise<any>, retryConfig?: RetryConfig) => Promise<any>;
-//# sourceMappingURL=utility.d.ts.map

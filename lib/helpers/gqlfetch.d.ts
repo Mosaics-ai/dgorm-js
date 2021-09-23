@@ -19,4 +19,3 @@ declare const _default: {
     getHealth: (endpoint: string, headers?: HeadersInit) => Promise<any>;
 };
 export default _default;
-//# sourceMappingURL=gqlfetch.d.ts.map

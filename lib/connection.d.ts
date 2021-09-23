@@ -66,4 +66,3 @@ export default class Connection {
      */
     close(): void;
 }
-//# sourceMappingURL=connection.d.ts.map
