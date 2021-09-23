@@ -4,6 +4,7 @@
   "description": "Modified DGraph ORM lib for js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "rm -rf lib && tsc -d --project tsconfig.json",
