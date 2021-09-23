@@ -1,0 +1,1 @@
+{"version":3,"file":"gqlfetch.d.ts","sourceRoot":"","sources":["../../src/helpers/gqlfetch.ts"],"names":[],"mappings":"AACA;;;;;;GAMG;AAEH,OAAc,EAAE,WAAW,EAAE,MAAM,YAAY,CAAC;AAEhD,MAAM,WAAW,YAAY;IACzB,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,QAAQ,CAAC,EAAE,MAAM,CAAC;IAClB,SAAS,CAAC,EAAE,MAAM,CAAC;CACtB;;;;;;;;AAkGD,wBAAkF"}

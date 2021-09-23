@@ -216,20 +216,21 @@ class Query {
         if(_conditions.indexOf(_key.toLowerCase()) === -1) {
           _filters.push(this._filter(_key, filter[_key], name));
         } else {
-          const _sub: Array<string> = [];
-          Object.keys(filter[_key]).forEach(_k => {
-            if(Array.isArray(filter[_key][_k])) {
-              filter[_key][_k].forEach((_val: any) => {
-                _sub.push(this._filter(_k, _val, name));
-              })
-            }else {
-              _sub.push(this._filter(_k, filter[_key][_k], name));
-            }
-          });
+            /** @dev This should be recursive */
+            const _sub: Array<string> = [];
+            Object.keys(filter[_key]).forEach(_k => {
+                if(Array.isArray(filter[_key][_k])) {
+                    filter[_key][_k].forEach((_val: any) => {
+                        _sub.push(this._filter(_k, _val, name));
+                    })
+                }else {
+                   _sub.push(this._filter(_k, filter[_key][_k], name));
+                }
+            });
 
-          if(_sub.length > 0) {
-            _filters.push(`(${_sub.join(` ${_key.replace('$', '').toUpperCase()} `)})`);
-          }
+            if(_sub.length > 0) {
+                _filters.push(`(${_sub.join(` ${_key.replace('$', '').toUpperCase()} `)})`);
+            }
         }
       });
     }

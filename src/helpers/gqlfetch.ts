@@ -23,9 +23,15 @@ export interface IGraphQLBody {
 //     console.debug(`[${time}] --------------------------------------------------------------`);
 // }
 
-const send = (endpoint:string, body: IGraphQLBody | string, route: string, headers:HeadersInit = {} ) => {
+const send = (
+    endpoint:string,
+    body: IGraphQLBody | string,
+    route: string,
+    method: 'GET' | 'POST',
+    headers:HeadersInit = {}
+) => {
     return fetch(endpoint + route, {
-        method: 'POST',
+        method,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -58,24 +64,29 @@ const send = (endpoint:string, body: IGraphQLBody | string, route: string, heade
 
 const sendGraphQL = (endpoint:string, body: IGraphQLBody | string, headers:HeadersInit = {} ) => {
     const route = '/graphql';
-    return send(endpoint, body, route, headers);
+    return send(endpoint, body, route, 'POST', headers);
 }
 
-const sendAdmin = (endpoint:string, body: IGraphQLBody | string, headers:HeadersInit = {} ) => {
+const sendAdmin = (
+    endpoint:string,
+    body: IGraphQLBody | string,
+    method: 'GET' | 'POST',
+    headers:HeadersInit = {}
+) => {
     const route = '/admin';
-    return send(endpoint, body, route, headers);
+    return send(endpoint, body, route, method, headers);
 }
 
 const validateSchema = (endpoint:string, schema:string, headers:HeadersInit = {} ) => {
     const route = '/admin/schema/validate';
     const body:string = schema;
-    return send(endpoint, body, route, headers);
+    return send(endpoint, body, route, 'GET', headers);
 }
 
 const updateSchema = (endpoint:string, schema:string, headers:HeadersInit = {} ) => {
     const route = '/admin/schema';
     const body:string = schema;
-    return send(endpoint, body, route, headers);
+    return send(endpoint, body, route, 'POST', headers);
 }
 
 const getHealth = (endpoint:string, headers:HeadersInit = {} ) => {
@@ -97,7 +108,7 @@ query Health {
     }
 }`
         };
-    return send(endpoint, body, route, headers);
+    return send(endpoint, body, route, 'GET', headers);
 }
 
 export default { sendGraphQL, sendAdmin, updateSchema, validateSchema, getHealth }

@@ -4,3 +4,4 @@ export * from './typemap';
 export * from './types';
 export * from './utility';
 export * from './graphql';
+//# sourceMappingURL=index.d.ts.map

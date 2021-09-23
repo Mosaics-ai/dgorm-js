@@ -1,21 +1,23 @@
 {
     "compilerOptions": {
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "target": "es6",
-      "noImplicitAny": true,
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "outDir": "lib",
-      "baseUrl": ".",
-      "paths": {
-        "*": [
-          "node_modules/*"
-        ]
-      },
-      "lib": ["ES2015"]
+        "target": "es2019",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "outDir": "lib",
+        "baseUrl": ".",
+        "types": ["node"],
+        "paths": {
+            "*": [
+            "node_modules/*"
+            ]
+        },
+        "lib": ["es2019", "esnext.asynciterable"],
     },
     "include": [
-      "src/**/*"
+        "src/**/*"
     ]
   }

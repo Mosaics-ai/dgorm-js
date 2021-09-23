@@ -217,3 +217,4 @@ export { Types as dgTypes };
 export * from './types';
 declare const _default: DgraphORM;
 export default _default;
+//# sourceMappingURL=index.d.ts.map

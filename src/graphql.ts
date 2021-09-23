@@ -125,7 +125,7 @@ import gqlfetch from './helpers/gqlfetch';
                     generatedSchema
                 }
             }
-        `)
+        `, 'GET')
         .then(r => Promise.resolve(r))
         .catch(e => Promise.reject(e));
     }
